@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.sp
 class MyKeyboard {
 
     @Composable
-    fun CustomKeyboard() {
+    fun CustomKeyboard(onClearButtonClick: () -> Unit) {
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
             val buttonSize = minOf(maxWidth, maxHeight) / 4
 
@@ -62,7 +62,13 @@ class MyKeyboard {
 
                             Surface(color = Color.Gray) {
                                 TextButton(
-                                    onClick = { /*TODO: Handle button click*/ },
+                                    onClick = {
+                                        if (buttonSymbols[i][j] == "C") {
+                                            onClearButtonClick()
+                                        } else {
+                                            //onButtonClicked(buttonSymbols[i][j])
+                                        }
+                                    },
                                     modifier = Modifier
                                         .size(buttonSize)
                                         .padding(1.dp),
