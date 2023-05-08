@@ -35,6 +35,9 @@ fun MainScreen() {
         val myDisplay = Display()
         val myKeyboard = MyKeyboard()
         myDisplay.CustomDisplay(displayText = displayText)
-        myKeyboard.CustomKeyboard(onClearButtonClick = mainViewModel::onClearButtonClicked)
+        myKeyboard.CustomKeyboard(
+            onClearButtonClick = mainViewModel::onClearButtonClicked,
+            onNumericButtonClicked = mainViewModel::onNumericButtonClicked
+        )
     }
 }

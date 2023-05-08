@@ -14,4 +14,8 @@ class MainViewModel : ViewModel() {
     fun onClearButtonClicked() {
         _displayText.value = keyboardUseCase.clearDisplay()
     }
+
+    fun onNumericButtonClicked(input: String) {
+        _displayText.value = keyboardUseCase.handleNumericInput(_displayText.value, input)
+    }
 }
