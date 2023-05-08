@@ -3,7 +3,7 @@ package com.sergiosabater.smartcurrencyconverter.utils.format
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 
-//Función que agrega separadores de miles a un número
+//Función que devuelve un número dado en formato de miles
 fun formatWithThousandsSeparator(number: String): String {
     // Elimina los separadores de miles actuales (si los hay) y convierte la cadena de números a un BigInteger
     val integerPart = number.replace(".", "").toBigInteger()

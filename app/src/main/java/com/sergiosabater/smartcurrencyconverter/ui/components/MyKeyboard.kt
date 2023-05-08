@@ -1,6 +1,5 @@
 package com.sergiosabater.smartcurrencyconverter.ui.components
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Surface
@@ -24,11 +22,17 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sergiosabater.smartcurrencyconverter.utils.constants.SymbolConstants.BACKSPACE_SYMBOL
+import com.sergiosabater.smartcurrencyconverter.utils.constants.SymbolConstants.CONVERSION_SYMBOL
 
 class MyKeyboard {
 
     @Composable
-    fun CustomKeyboard(onClearButtonClick: () -> Unit, onNumericButtonClicked: (String) -> Unit) {
+    fun CustomKeyboard(
+        onClearButtonClick: () -> Unit,
+        onNumericButtonClicked: (String) -> Unit,
+        onBackspaceClicked: () -> Unit
+    ) {
         // BoxWithConstraints to get the available screen dimensions
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
             // Calculate the button size based on the minimum of maxWidth and maxHeight
@@ -53,7 +57,7 @@ class MyKeyboard {
             )
 
             val buttonSymbols = listOf(
-                listOf("C", "\u232B", "\u21CC"),
+                listOf("C", BACKSPACE_SYMBOL, CONVERSION_SYMBOL),
                 listOf("7", "8", "9"),
                 listOf("4", "5", "6"),
                 listOf("1", "2", "3"),
@@ -76,9 +80,16 @@ class MyKeyboard {
                                             buttonSymbols[i][j] == "C" -> {
                                                 onClearButtonClick()
                                             }
-                                            buttonSymbols[i][j].first().isDigit() || buttonSymbols[i][j] == "," -> {
+
+                                            buttonSymbols[i][j] == BACKSPACE_SYMBOL -> {
+                                                onBackspaceClicked()
+                                            }
+
+                                            buttonSymbols[i][j].first()
+                                                .isDigit() || buttonSymbols[i][j] == "," -> {
                                                 onNumericButtonClicked(buttonSymbols[i][j])
                                             }
+
                                             else -> {
                                                 //onButtonClicked(buttonSymbols[i][j])
                                             }

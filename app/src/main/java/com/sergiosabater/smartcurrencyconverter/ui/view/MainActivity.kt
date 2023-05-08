@@ -37,7 +37,8 @@ fun MainScreen() {
         myDisplay.CustomDisplay(displayText = displayText)
         myKeyboard.CustomKeyboard(
             onClearButtonClick = mainViewModel::onClearButtonClicked,
-            onNumericButtonClicked = mainViewModel::onNumericButtonClicked
+            onNumericButtonClicked = mainViewModel::onNumericButtonClicked,
+            onBackspaceClicked = mainViewModel::onBackspaceClicked
         )
     }
 }
