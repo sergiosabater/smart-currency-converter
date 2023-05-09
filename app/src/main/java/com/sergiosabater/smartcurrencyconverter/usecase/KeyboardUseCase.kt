@@ -78,7 +78,8 @@ class KeyboardUseCase {
 
         // Si hay una parte decimal, se concatena al final de la parte entera formateada
         // De lo contrario, solo se guarda la parte entera formateada en updatedInput
-        updatedInput = if (decimalPart.isNotEmpty()) "$formattedIntegerPart,$decimalPart" else formattedIntegerPart
+        updatedInput =
+            if (decimalPart.isNotEmpty()) "$formattedIntegerPart,$decimalPart" else formattedIntegerPart
 
         // Si el resultado es una cadena vacía, devolvemos "0"; de lo contrario, devolvemos el resultado actualizado
         return if (updatedInput.isEmpty()) "0" else updatedInput
