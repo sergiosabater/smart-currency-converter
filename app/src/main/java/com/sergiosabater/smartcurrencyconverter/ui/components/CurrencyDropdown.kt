@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowDropDown
+import androidx.compose.material3.MaterialTheme
 
 class CurrencyDropdown {
 
@@ -97,6 +98,9 @@ class CurrencyDropdown {
                         tint = Color.Transparent
                     ) },
                 colors = ExposedDropdownMenuDefaults.textFieldColors(
+                    textColor = Color.Black, // Cambia el color del texto a negro
+                    cursorColor = MaterialTheme.colorScheme.onSurface,
+                    focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                     containerColor = Color.Transparent
                 ),
