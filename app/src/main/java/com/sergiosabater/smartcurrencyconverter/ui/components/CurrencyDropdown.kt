@@ -2,10 +2,8 @@ package com.sergiosabater.smartcurrencyconverter.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.*
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -14,8 +12,12 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 class CurrencyDropdown {
 
@@ -45,7 +47,13 @@ class CurrencyDropdown {
                 modifier = Modifier.weight(1f) // Aplica el modificador weight para dividir el ancho disponible
             )
 
-            Spacer(modifier = Modifier.width(16.dp)) // Agrega un espacio entre los dos dropdowns
+            Text(
+                text = "→", // Flecha entre los dropdowns
+                fontSize = 35.sp,
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .padding(horizontal = 0.dp)
+            )
 
             CustomExposedDropdown(
                 countries = countries,
@@ -78,8 +86,12 @@ class CurrencyDropdown {
                 onValueChange = {},
                 readOnly = true,
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded) },
-                colors = ExposedDropdownMenuDefaults.textFieldColors(),
-                modifier = Modifier.menuAnchor()
+                colors = ExposedDropdownMenuDefaults.textFieldColors(
+                    unfocusedIndicatorColor = Color.Transparent
+                ),
+                modifier = Modifier.menuAnchor(),
+                maxLines = 1, // Establece el número máximo de líneas en 1
+                textStyle = TextStyle(fontSize = 14.sp) // Cambia el tamaño de la fuente a 14.sp
             )
 
             ExposedDropdownMenu(
