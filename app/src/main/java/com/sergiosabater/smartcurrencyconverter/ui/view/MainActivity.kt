@@ -9,6 +9,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.sergiosabater.smartcurrencyconverter.ui.components.CurrencyDropdown
 import com.sergiosabater.smartcurrencyconverter.ui.components.Display
 import com.sergiosabater.smartcurrencyconverter.ui.components.MyKeyboard
 import com.sergiosabater.smartcurrencyconverter.ui.theme.SmartCurrencyConverterTheme
@@ -34,7 +35,9 @@ fun MainScreen() {
     Column {
         val myDisplay = Display()
         val myKeyboard = MyKeyboard()
+        val myCurrencyDropdown = CurrencyDropdown()
         myDisplay.CustomDisplay(displayText = displayText)
+        myCurrencyDropdown.CustomDropdown()
         myKeyboard.CustomKeyboard(
             onClearButtonClick = mainViewModel::onClearButtonClicked,
             onNumericButtonClicked = mainViewModel::onNumericButtonClicked,
