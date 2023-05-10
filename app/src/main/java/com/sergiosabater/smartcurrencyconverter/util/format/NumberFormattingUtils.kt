@@ -2,31 +2,12 @@ package com.sergiosabater.smartcurrencyconverter.util.format
 
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
-import java.text.NumberFormat
-import java.util.Locale
 
-
-fun formatDisplay(input: String): String {
-    // Divide el contenido del input en dos partes (entera y decimal) usando la "," como separador
-    val parts = input.split(",")
-
-    // La parte entera es el primer elemento de la lista dividida
-    val integerPart = parts[0]
-
-    // Si hay una parte decimal, se guarda en decimalPart; de lo contrario, se guarda una cadena vacía
-    val decimalPart = if (parts.size > 1) parts[1] else ""
-
-    // Formateamos la parte entera con separadores de miles
-    val formattedIntegerPart = formatWithThousandsSeparator(integerPart)
-
-    // Si hay una parte decimal, se concatena al final de la parte entera formateada
-    // De lo contrario, solo se guarda la parte entera formateada en updatedInput
-    val updatedInput =
-        if (decimalPart.isNotEmpty()) "$formattedIntegerPart,$decimalPart" else formattedIntegerPart
-
-    return updatedInput
-}
-
+/**
+ * Devuelve una cadena de texto que representa un número con separadores de miles.
+ * @param number el número a formatear como una cadena de texto.
+ * @return el número formateado con separadores de miles.
+ */
 fun formatWithThousandsSeparator(number: String): String {
     // Elimina los separadores de miles actuales (si los hay) y convierte la cadena de números a un BigInteger
     val integerPart = number.replace(".", "").toBigInteger()
@@ -47,6 +28,14 @@ fun formatWithThousandsSeparator(number: String): String {
     return formatter.format(integerPart)
 }
 
+
+/**
+ * Actualiza el contenido del display con el nuevo dígito ingresado y lo formatea
+ * con separadores de miles
+ * @param currentDisplay el contenido actual del display
+ * @param digit el dígito ingresado por el usuario
+ * @return el nuevo contenido del display con separadores de miles
+ */
 fun updateAndFormatDisplay(currentDisplay: String, digit: String): String {
     if (digit == "0" && currentDisplay == "0") {
         return currentDisplay
@@ -66,6 +55,8 @@ fun updateAndFormatDisplay(currentDisplay: String, digit: String): String {
 
     if (digit == "," && decimalPart.isEmpty()) {
         newDisplay = "$integerPart,"
+    } else if (integerPart == "") {
+        newDisplay = "0"
     } else {
         val formattedIntegerPart = formatWithThousandsSeparator(integerPart)
         newDisplay =

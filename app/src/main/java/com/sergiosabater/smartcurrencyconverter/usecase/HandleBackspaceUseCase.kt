@@ -1,15 +1,23 @@
 package com.sergiosabater.smartcurrencyconverter.usecase
 
-import com.sergiosabater.smartcurrencyconverter.util.format.formatDisplay
-import com.sergiosabater.smartcurrencyconverter.util.format.formatWithThousandsSeparator
+
+import com.sergiosabater.smartcurrencyconverter.util.format.updateAndFormatDisplay
 
 class HandleBackspaceUseCase {
 
     fun execute(input: String): String {
         val updatedInput = removeLastCharacter(input)
-        return formatDisplay(updatedInput)
+        return updateAndFormatDisplay(updatedInput, "")
     }
 
+    /**
+     *
+     * Elimina el último carácter de una cadena dada. Si la cadena es vacía o contiene
+     * solo "0" o tiene una longitud de 1, se devuelve "0".
+     * Si el último carácter es una coma (",") también se elimina.
+     * @param input La cadena de entrada a procesar.
+     * @return La cadena procesada con el último carácter eliminado.
+     */
     private fun removeLastCharacter(input: String): String {
         // Si el input es vacío, solo hay un "0" o solo hay un caracter en el input, devolvemos "0"
         if (input.isEmpty() || input == "0" || input.length == 1) {
