@@ -21,7 +21,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sergiosabater.smartcurrencyconverter.R
 import com.sergiosabater.smartcurrencyconverter.model.Currency
 import com.sergiosabater.smartcurrencyconverter.util.parser.parseCurrencies
 
@@ -38,7 +37,7 @@ class CurrencySelector {
     fun CustomCurrencySelector() {
         val context = LocalContext.current
         val currencies = remember {
-            parseCurrencies(context, R.raw.currency_dictionary)
+            parseCurrencies(context)
         }
 
         val (isExpanded1, onExpandedChange1) = remember { mutableStateOf(false) }
