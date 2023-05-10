@@ -1,4 +1,4 @@
-package com.sergiosabater.smartcurrencyconverter.utils.conversion
+package com.sergiosabater.smartcurrencyconverter.util.conversion
 
 import kotlin.math.round
 

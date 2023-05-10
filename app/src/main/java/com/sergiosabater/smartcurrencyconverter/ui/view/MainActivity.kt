@@ -12,6 +12,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sergiosabater.smartcurrencyconverter.ui.components.CurrencySelector
 import com.sergiosabater.smartcurrencyconverter.ui.components.Display
 import com.sergiosabater.smartcurrencyconverter.ui.components.Keyboard
+import com.sergiosabater.smartcurrencyconverter.ui.components.config.KeyboardConfig
 import com.sergiosabater.smartcurrencyconverter.ui.theme.SmartCurrencyConverterTheme
 import com.sergiosabater.smartcurrencyconverter.viewmodel.MainViewModel
 
@@ -36,9 +37,11 @@ fun MainScreen() {
         val mDisplay = Display()
         val mCurrencySelector = CurrencySelector()
         val mKeyboard = Keyboard()
+        val keyboardConfig = KeyboardConfig()
         mDisplay.CustomDisplay(displayText = displayText)
         mCurrencySelector.CustomCurrencySelector()
         mKeyboard.CustomKeyboard(
+            config = keyboardConfig,
             onClearButtonClick = mainViewModel::onClearButtonClicked,
             onNumericButtonClicked = mainViewModel::onNumericButtonClicked,
             onBackspaceClicked = mainViewModel::onBackspaceClicked

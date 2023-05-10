@@ -1,9 +1,7 @@
 {
    "ARS":{
       "currency_name":"Argentine Peso",
-      "countries":[
-         "Argentina"
-      ]
+      "country": "Argentina"
    },
    "AUD":{
       "currency_name":"Australian Dollar",

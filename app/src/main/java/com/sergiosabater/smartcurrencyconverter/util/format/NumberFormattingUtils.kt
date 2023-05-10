@@ -1,4 +1,4 @@
-package com.sergiosabater.smartcurrencyconverter.utils.format
+package com.sergiosabater.smartcurrencyconverter.util.format
 
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols

@@ -22,13 +22,16 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sergiosabater.smartcurrencyconverter.utils.constants.SymbolConstants.BACKSPACE_SYMBOL
-import com.sergiosabater.smartcurrencyconverter.utils.constants.SymbolConstants.CONVERSION_SYMBOL
+import com.sergiosabater.smartcurrencyconverter.ui.components.config.KeyboardConfig
+import com.sergiosabater.smartcurrencyconverter.util.constant.SymbolConstants.BACKSPACE_SYMBOL_STRING
+import com.sergiosabater.smartcurrencyconverter.util.constant.TextConstants.CLEAR_BUTTON_STRING
+import com.sergiosabater.smartcurrencyconverter.util.constant.TextConstants.COMMA_STRING
 
 class Keyboard {
 
     @Composable
     fun CustomKeyboard(
+        config: KeyboardConfig,
         onClearButtonClick: () -> Unit,
         onNumericButtonClicked: (String) -> Unit,
         onBackspaceClicked: () -> Unit
@@ -40,63 +43,40 @@ class Keyboard {
             // Store the screen width in a mutable state to be used later
             val screenWidth = remember { mutableStateOf(maxWidth) }
 
-            val buttonColors = listOf(
-                listOf(Color.Red, Color.DarkGray, Color.DarkGray),
-                listOf(Color.White, Color.White, Color.White),
-                listOf(Color.White, Color.White, Color.White),
-                listOf(Color.White, Color.White, Color.White),
-                listOf(Color.White, Color.White, Color.White)
-            )
-
-            val buttonTextColors = listOf(
-                listOf(Color.White, Color.White, Color.White),
-                listOf(Color.Black, Color.Black, Color.Black),
-                listOf(Color.Black, Color.Black, Color.Black),
-                listOf(Color.Black, Color.Black, Color.Black),
-                listOf(Color.Black, Color.Black, Color.Black)
-            )
-
-            val buttonSymbols = listOf(
-                listOf("C", BACKSPACE_SYMBOL, CONVERSION_SYMBOL),
-                listOf("7", "8", "9"),
-                listOf("4", "5", "6"),
-                listOf("1", "2", "3"),
-                listOf("⚙", "0", ",")
-            )
-
             Column(modifier = Modifier.fillMaxWidth()) {
-                for (i in buttonSymbols.indices) {
+                for (i in config.buttonSymbols.indices) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        for (j in buttonSymbols[i].indices) {
-                            val colors = Pair(buttonColors[i][j], buttonTextColors[i][j])
+                        for (j in config.buttonSymbols[i].indices) {
+                            val colors =
+                                Pair(config.buttonColors[i][j], config.buttonTextColors[i][j])
 
                             Surface(color = Color.Gray) {
                                 TextButton(
                                     onClick = {
                                         when {
-                                            buttonSymbols[i][j] == "C" -> {
+                                            config.buttonSymbols[i][j] == CLEAR_BUTTON_STRING -> {
                                                 onClearButtonClick()
                                             }
 
-                                            buttonSymbols[i][j] == BACKSPACE_SYMBOL -> {
+                                            config.buttonSymbols[i][j] == BACKSPACE_SYMBOL_STRING -> {
                                                 onBackspaceClicked()
                                             }
 
-                                            buttonSymbols[i][j].first()
-                                                .isDigit() || buttonSymbols[i][j] == "," -> {
-                                                onNumericButtonClicked(buttonSymbols[i][j])
+                                            config.buttonSymbols[i][j].first()
+                                                .isDigit() || config.buttonSymbols[i][j] == COMMA_STRING -> {
+                                                onNumericButtonClicked(config.buttonSymbols[i][j])
                                             }
 
                                             else -> {
-                                                //onButtonClicked(buttonSymbols[i][j])
+                                                // TODO: Implement this part of the code later
                                             }
                                         }
                                     },
                                     modifier = Modifier
-                                        .width(screenWidth.value / buttonSymbols[i].size)
+                                        .width(screenWidth.value / config.buttonSymbols[i].size)
                                         .height(buttonSize)
                                         .padding(1.dp),
                                     colors = ButtonDefaults.textButtonColors(
@@ -106,7 +86,7 @@ class Keyboard {
                                     shape = RectangleShape
                                 ) {
                                     Text(
-                                        text = buttonSymbols[i][j],
+                                        text = config.buttonSymbols[i][j],
                                         fontSize = 28.sp,
                                         fontWeight = FontWeight.Light
                                     )

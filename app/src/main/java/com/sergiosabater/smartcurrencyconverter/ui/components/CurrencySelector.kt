@@ -16,10 +16,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sergiosabater.smartcurrencyconverter.R
+import com.sergiosabater.smartcurrencyconverter.model.Currency
+import com.sergiosabater.smartcurrencyconverter.util.parser.parseCurrencies
 
 
 class CurrencySelector {
@@ -32,27 +36,16 @@ class CurrencySelector {
 
     @Composable
     fun CustomCurrencySelector() {
-        val countries = remember {
-            listOf(
-                "Estados Unidos", "Canadá", "México", "España", "Francia",
-                "Italia", "Alemania", "Portugal", "Japón", "Australia",
-                "Reino Unido", "Irlanda", "Suecia", "Noruega", "Dinamarca",
-                "Suiza", "Bélgica", "Países Bajos", "Austria", "Grecia",
-                "Finlandia", "Rusia", "China", "India", "Brasil",
-                "Argentina", "Colombia", "Chile", "Uruguay", "Perú",
-                "Venezuela", "Costa Rica", "Panamá", "Puerto Rico", "República Dominicana",
-                "Cuba", "Honduras", "El Salvador", "Nicaragua", "Guatemala"
-            )
+        val context = LocalContext.current
+        val currencies = remember {
+            parseCurrencies(context, R.raw.currency_dictionary)
         }
 
-        /* Variables de par. Usadas para almacenar estados en Compose. Permiten la recomposición
-        automática de la UI cuando el estado cambia */
         val (isExpanded1, onExpandedChange1) = remember { mutableStateOf(false) }
-        val (selectedCountry1, onSelectedCountryChange1) = remember { mutableStateOf(countries[0]) }
+        val (selectedCurrency1, onSelectedCurrencyChange1) = remember { mutableStateOf(currencies[0].currencyName) }
 
         val (isExpanded2, onExpandedChange2) = remember { mutableStateOf(false) }
-        val (selectedCountry2, onSelectedCountryChange2) = remember { mutableStateOf(countries[0]) }
-
+        val (selectedCurrency2, onSelectedCurrencyChange2) = remember { mutableStateOf(currencies[0].currencyName) }
 
         Row(
             modifier = Modifier
@@ -61,11 +54,11 @@ class CurrencySelector {
             horizontalArrangement = Arrangement.Center
         ) {
             CustomExposedDropdown(
-                countries = countries,
+                currencies = currencies,
                 isExpanded = isExpanded1,
                 onExpandedChange = onExpandedChange1,
-                selectedCountry = selectedCountry1,
-                onSelectedCountryChange = onSelectedCountryChange1,
+                selectedCurrency = selectedCurrency1,
+                onSelectedCountryChange = onSelectedCurrencyChange1,
                 modifier = Modifier.weight(1f)
             )
 
@@ -79,11 +72,11 @@ class CurrencySelector {
             )
 
             CustomExposedDropdown(
-                countries = countries,
+                currencies = currencies,
                 isExpanded = isExpanded2,
                 onExpandedChange = onExpandedChange2,
-                selectedCountry = selectedCountry2,
-                onSelectedCountryChange = onSelectedCountryChange2,
+                selectedCurrency = selectedCurrency2,
+                onSelectedCountryChange = onSelectedCurrencyChange2,
                 modifier = Modifier.weight(1f)
             )
         }
@@ -91,10 +84,10 @@ class CurrencySelector {
 
     @Composable
     private fun CustomExposedDropdown(
-        countries: List<String>,
+        currencies: List<Currency>,
         isExpanded: Boolean,
         onExpandedChange: (Boolean) -> Unit,
-        selectedCountry: String,
+        selectedCurrency: String,
         onSelectedCountryChange: (String) -> Unit,
         modifier: Modifier = Modifier
     ) {
@@ -103,7 +96,7 @@ class CurrencySelector {
                 modifier = modifier.clickable(onClick = { onExpandedChange(true) })
             ) {
                 Text(
-                    text = selectedCountry,
+                    text = selectedCurrency,
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier
                         .padding(start = 15.dp, top = 15.dp, bottom = 15.dp, end = 15.dp)
@@ -115,17 +108,17 @@ class CurrencySelector {
                 expanded = isExpanded,
                 onDismissRequest = { onExpandedChange(false) }
             ) {
-                countries.forEach { country ->
+                currencies.forEach { currency ->
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-                                onSelectedCountryChange(country)
+                                onSelectedCountryChange(currency.currencyName)
                                 onExpandedChange(false)
                             }
                     ) {
                         Text(
-                            text = country,
+                            text = currency.currencyName,
                             style = dropdownTextStyle,
                             modifier = Modifier.padding(8.dp)
                         )

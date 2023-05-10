@@ -1,6 +1,6 @@
 package com.sergiosabater.smartcurrencyconverter.usecase
 
-import com.sergiosabater.smartcurrencyconverter.utils.format.formatWithThousandsSeparator
+import com.sergiosabater.smartcurrencyconverter.util.format.formatWithThousandsSeparator
 
 class KeyboardUseCase {
 

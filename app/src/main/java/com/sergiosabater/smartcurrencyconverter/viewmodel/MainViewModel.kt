@@ -2,7 +2,7 @@ package com.sergiosabater.smartcurrencyconverter.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.sergiosabater.smartcurrencyconverter.usecase.KeyboardUseCase
-import com.sergiosabater.smartcurrencyconverter.utils.constants.NumberConstants.INITIAL_VALUE_STRING
+import com.sergiosabater.smartcurrencyconverter.util.constant.NumberConstants.INITIAL_VALUE_STRING
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
