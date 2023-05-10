@@ -7,11 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ArrowDropDown
 import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -104,10 +100,10 @@ class CurrencyDropdown {
             ) {
                 Text(
                     text = selectedCountry,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier
-                        .padding(start = 16.dp, end = 8.dp)
-                        .align(Alignment.CenterStart)
+                        .padding(start = 16.dp, top = 10.dp, bottom = 10.dp, end = 10.dp)
+                        .align(Alignment.Center)
                 )
             }
 
