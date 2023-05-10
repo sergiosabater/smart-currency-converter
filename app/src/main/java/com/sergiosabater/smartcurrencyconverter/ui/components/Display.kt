@@ -25,7 +25,7 @@ class Display {
                 .background(Color.White)
                 .padding(20.dp)
         ) {
-            //Desplazamiento en horizontal del display
+            //La propiedad horzontalScroll permite scroll horizontal del display
             Box(
                 modifier = Modifier
                     .fillMaxWidth()

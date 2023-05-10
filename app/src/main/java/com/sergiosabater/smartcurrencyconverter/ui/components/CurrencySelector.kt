@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,16 +22,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 
-class CurrencyDropdown {
+class CurrencySelector {
 
-    val dropdownTextStyle = TextStyle(
+    private val dropdownTextStyle = TextStyle(
         fontSize = 16.sp,
         fontWeight = FontWeight.Normal,
         color = Color.Black
     )
 
     @Composable
-    fun CustomDropdown() {
+    fun CustomCurrencySelector() {
         val countries = remember {
             listOf(
                 "Estados Unidos", "Canadá", "México", "España", "Francia",
@@ -43,6 +45,8 @@ class CurrencyDropdown {
             )
         }
 
+        /* Variables de par. Usadas para almacenar estados en Compose. Permiten la recomposición
+        automática de la UI cuando el estado cambia */
         val (isExpanded1, onExpandedChange1) = remember { mutableStateOf(false) }
         val (selectedCountry1, onSelectedCountryChange1) = remember { mutableStateOf(countries[0]) }
 
@@ -102,7 +106,7 @@ class CurrencyDropdown {
                     text = selectedCountry,
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier
-                        .padding(start = 16.dp, top = 10.dp, bottom = 10.dp, end = 10.dp)
+                        .padding(start = 15.dp, top = 15.dp, bottom = 15.dp, end = 15.dp)
                         .align(Alignment.Center)
                 )
             }

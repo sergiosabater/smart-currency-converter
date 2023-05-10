@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.sp
 import com.sergiosabater.smartcurrencyconverter.utils.constants.SymbolConstants.BACKSPACE_SYMBOL
 import com.sergiosabater.smartcurrencyconverter.utils.constants.SymbolConstants.CONVERSION_SYMBOL
 
-class MyKeyboard {
+class Keyboard {
 
     @Composable
     fun CustomKeyboard(
