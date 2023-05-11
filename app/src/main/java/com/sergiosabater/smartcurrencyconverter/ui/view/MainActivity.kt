@@ -38,7 +38,7 @@ fun MainScreen() {
         val mCurrencySelector = CurrencySelector()
         val mKeyboard = Keyboard()
         val keyboardConfig = KeyboardConfig()
-        mDisplay.CustomDisplay(displayText = displayText)
+        mDisplay.CustomDisplay(displayText = displayText, symbol = "€")
         mCurrencySelector.CustomCurrencySelector()
         mKeyboard.CustomKeyboard(
             config = keyboardConfig,

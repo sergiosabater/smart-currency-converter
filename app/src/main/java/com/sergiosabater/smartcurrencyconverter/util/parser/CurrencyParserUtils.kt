@@ -22,7 +22,7 @@ fun parseCurrencies(context: Context): List<Currency> {
     val jsonElement = JsonParser.parseString(jsonString)
     val jsonObject = jsonElement.asJsonObject
 
-    val conversionRates = readConversionRates(context, R.raw.currency_rates)
+    val exchangeRates = readConversionRates(context, R.raw.currency_rates)
 
     return jsonObject.entrySet().mapNotNull { entry ->
         val currencyIsoCode = entry.key
@@ -30,14 +30,14 @@ fun parseCurrencies(context: Context): List<Currency> {
 
         val currencyName = currencyInfo.get("currency_name")?.asString
         val countryName = currencyInfo.get("country")?.asString
-        val conversionRate = conversionRates[currencyIsoCode]
+        val exchangeRate = exchangeRates[currencyIsoCode]
 
-        if (currencyName != null && countryName != null && conversionRate != null) {
+        if (currencyName != null && countryName != null && exchangeRate != null) {
             Currency(
                 isoCode = currencyIsoCode,
                 countryName = countryName,
                 currencyName = currencyName,
-                conversionRate = conversionRate
+                exchangeRate = exchangeRate
             )
         } else {
             null

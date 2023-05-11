@@ -1,146 +1,182 @@
 {
-   "ARS":{
-      "currency_name":"Argentine Peso",
-      "country": "Argentina"
-   },
-   "AUD":{
-      "currency_name":"Australian Dollar",
-      "country":"Australia"
-   },
-   "BRL":{
-      "currency_name":"Brazilian Real",
-      "country":"Brazil"
-   },
-   "BYN":{
-      "currency_name":"Belarusian Ruble",
-      "country":"Belarus"
-   },
-   "CAD":{
-      "currency_name":"Canadian Dollar",
-      "country":"Canada"
-   },
-   "CHF":{
-      "currency_name":"Swiss Franc",
-      "country":"Switzerland"
-   },
-   "CLP":{
-      "name":"Chilean Peso",
-      "country":"Chile"
-   },
-   "CNY":{
-      "currency_name":"Chinese Yuan",
-      "country":"China"
-   },
-   "COP":{
-      "name":"Colombian Peso",
-      "country":"Colombia"
-   },
-   "CZK":{
-      "currency_name":"Czech Koruna",
-      "country":"Czech Republic"
-   },
-   "EUR":{
-      "currency_name":"Euro",
-      "country":"Eurozone"
-   },
-   "GBP":{
-      "currency_name":"British Pound Sterling",
-      "country":"United Kingdom"
-   },
-   "HKD":{
-      "currency_name":"Hong Kong Dollar",
-      "country":"Hong Kong"
-   },
-   "IDR":{
-      "currency_name":"Indonesian Rupiah",
-      "country":"Indonesia"
-   },
-   "ILS":{
-      "currency_name":"Israeli New Sheqel",
-      "country":"Israel"
-   },
-   "INR":{
-      "currency_name":"Indian Rupee",
-      "country":"India"
-   },
-   "JPY":{
-      "currency_name":"Japanese Yen",
-      "country":"Japan"
-   },
-   "KRW":{
-      "currency_name":"South Korean Won",
-      "country":"South Korea"
-   },
-   "MXN":{
-      "currency_name":"Mexican Peso",
-      "country":"Mexico"
-   },
-   "MYR":{
-      "currency_name":"Malaysian Ringgit",
-      "country":"Malaysia"
-   },
-   "NOK":{
-      "currency_name":"Norwegian Krone",
-      "country":"Norway"
-   },
-   "NZD":{
-      "currency_name":"New Zealand Dollar",
-      "country":"New Zealand"
-   },
-   "PEN":{
-      "name":"Peruvian Sol",
-      "country":"Peru"
-   },
-   "PHP":{
-      "currency_name":"Philippine Peso",
-      "country":"Philippines"
-   },
-   "PLN":{
-      "currency_name":"Polish Zloty",
-      "country":"Poland"
-   },
-   "RUB":{
-      "currency_name":"Russian Ruble",
-      "country":"Russia"
-   },
-   "SAR":{
-      "currency_name":"Saudi Riyal",
-      "country":"Saudi Arabia"
-   },
-   "SEK":{
-      "currency_name":"Swedish Krona",
-      "country":"Sweden"
-   },
-   "SGD":{
-      "currency_name":"Singapore Dollar",
-      "country":"Singapore"
-   },
-   "THB":{
-      "currency_name":"Thai Baht",
-      "country":"Thailand"
-   },
-   "TND":{
-      "currency_name":"Tunisian Dinar",
-      "country":"Tunisia"
-   },
-   "TRY":{
-      "currency_name":"Turkish Lira",
-      "country":"Turkey"
-   },
-   "TWD":{
-      "currency_name":"New Taiwan Dollar",
-      "country":"Taiwan"
-   },
-   "USD":{
-      "currency_name":"US Dollar",
-      "country":"United States"
-   },
-   "UYU":{
-      "name":"Uruguayan Peso",
-      "country":"Uruguay"
-   },
-   "ZAR":{
-      "currency_name":"South African Rand",
-      "country":"South Africa"
-   }
+  "ARS": {
+    "currency_name": "Argentine Peso",
+    "country": "Argentina",
+    "currency_symbol": "$"
+  },
+  "AUD": {
+    "currency_name": "Australian Dollar",
+    "country": "Australia",
+    "currency_symbol": "$"
+  },
+  "BRL": {
+    "currency_name": "Brazilian Real",
+    "country": "Brazil",
+    "currency_symbol": "R$"
+  },
+  "BYN": {
+    "currency_name": "Belarusian Ruble",
+    "country": "Belarus",
+    "currency_symbol": "Br"
+  },
+  "CAD": {
+    "currency_name": "Canadian Dollar",
+    "country": "Canada",
+    "currency_symbol": "$"
+  },
+  "CHF": {
+    "currency_name": "Swiss Franc",
+    "country": "Switzerland",
+    "currency_symbol": "Fr"
+  },
+  "CLP": {
+    "name": "Chilean Peso",
+    "country": "Chile",
+    "currency_symbol": "$"
+  },
+  "CNY": {
+    "currency_name": "Chinese Yuan",
+    "country": "China",
+    "currency_symbol": "¥"
+  },
+  "COP": {
+    "name": "Colombian Peso",
+    "country": "Colombia",
+    "currency_symbol": "$"
+  },
+  "CZK": {
+    "currency_name": "Czech Koruna",
+    "country": "Czech Republic",
+    "currency_symbol": "Kč"
+  },
+  "EUR": {
+    "currency_name": "Euro",
+    "country": "Eurozone",
+    "currency_symbol": "€"
+  },
+  "GBP": {
+    "currency_name": "British Pound Sterling",
+    "country": "United Kingdom",
+    "currency_symbol": "£"
+  },
+  "HKD": {
+    "currency_name": "Hong Kong Dollar",
+    "country": "Hong Kong",
+    "currency_symbol": "$"
+  },
+  "IDR": {
+    "currency_name": "Indonesian Rupiah",
+    "country": "Indonesia",
+    "currency_symbol": "Rp"
+  },
+  "ILS": {
+    "currency_name": "Israeli New Sheqel",
+    "country": "Israel",
+    "currency_symbol": "₪"
+  },
+  "INR": {
+    "currency_name": "Indian Rupee",
+    "country": "India",
+    "currency_symbol": "₹"
+  },
+  "JPY": {
+    "currency_name": "Japanese Yen",
+    "country": "Japan",
+    "currency_symbol": "¥"
+  },
+  "KRW": {
+    "currency_name": "South Korean Won",
+    "country": "South Korea",
+    "currency_symbol": "₩"
+  },
+  "MXN": {
+    "currency_name": "Mexican Peso",
+    "country": "Mexico",
+    "currency_symbol": "$"
+  },
+  "MYR": {
+    "currency_name": "Malaysian Ringgit",
+    "country": "Malaysia",
+    "currency_symbol": "RM"
+  },
+  "NOK": {
+    "currency_name": "Norwegian Krone",
+    "country": "Norway",
+    "currency_symbol": "kr"
+  },
+  "NZD": {
+    "currency_name": "New Zealand Dollar",
+    "country": "New Zealand",
+    "currency_symbol": "$"
+  },
+  "PEN": {
+    "name": "Peruvian Sol",
+    "country": "Peru",
+    "currency_symbol": "S/"
+  },
+  "PHP": {
+    "currency_name": "Philippine Peso",
+    "country": "Philippines",
+    "currency_symbol": "₱"
+  },
+  "PLN": {
+    "currency_name": "Polish Zloty",
+    "country": "Poland",
+    "currency_symbol": "zł"
+  },
+  "RUB": {
+    "currency_name": "Russian Ruble",
+    "country": "Russia",
+    "currency_symbol": "₽"
+  },
+  "SAR": {
+    "currency_name": "Saudi Riyal",
+    "country": "Saudi Arabia",
+    "currency_symbol": "ر.س"
+  },
+  "SEK": {
+    "currency_name": "Swedish Krona",
+    "country": "Sweden",
+    "currency_symbol": "kr"
+  },
+  "SGD": {
+    "currency_name": "Singapore Dollar",
+    "country": "Singapore",
+    "currency_symbol": "$"
+  },
+  "THB": {
+    "currency_name": "Thai Baht",
+    "country": "Thailand",
+    "currency_symbol": "฿"
+  },
+  "TND": {
+    "currency_name": "Tunisian Dinar",
+    "country": "Tunisia",
+    "currency_symbol": "د.ت"
+  },
+  "TRY": {
+    "currency_name": "Turkish Lira",
+    "country": "Turkey",
+    "currency_symbol": "₺"
+  },
+  "TWD": {
+    "currency_name": "New Taiwan Dollar",
+    "country": "Taiwan",
+    "currency_symbol": "NT$"
+  },
+  "USD": {
+    "currency_name": "US Dollar",
+    "country": "United States",
+    "currency_symbol": "$"
+  },
+  "UYU": {
+    "name": "Uruguayan Peso",
+    "country": "Uruguay",
+    "currency_symbol": "$"
+  },
+  "ZAR": {
+    "currency_name": "South African Rand",
+    "country": "South Africa",
+    "currency_symbol": "R"
+  }
 }

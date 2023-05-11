@@ -15,7 +15,7 @@ class MainViewModel : ViewModel() {
     private val handleBackspaceUseCase = HandleBackspaceUseCase()
     private val _displayText =
         MutableStateFlow(INITIAL_VALUE_STRING) // Valor que comienza por defecto
-    val displayText: StateFlow<String> = _displayText
+    val displayText: StateFlow<String> = _displayText //Reemplazar String por Sealed Class
 
     fun onClearButtonClicked() {
         _displayText.value = clearDisplayUseCase.execute()
