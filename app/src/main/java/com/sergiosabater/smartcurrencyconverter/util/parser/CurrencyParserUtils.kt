@@ -30,14 +30,16 @@ fun parseCurrencies(context: Context): List<Currency> {
 
         val currencyName = currencyInfo.get("currency_name")?.asString
         val countryName = currencyInfo.get("country")?.asString
+        val currencySymbol = currencyInfo.get("currency_symbol")?.asString
         val exchangeRate = exchangeRates[currencyIsoCode]
 
-        if (currencyName != null && countryName != null && exchangeRate != null) {
+        if (currencyName != null && countryName != null && exchangeRate != null && currencySymbol != null) {
             Currency(
                 isoCode = currencyIsoCode,
                 countryName = countryName,
                 currencyName = currencyName,
-                exchangeRate = exchangeRate
+                exchangeRate = exchangeRate,
+                currencySymbol = currencySymbol
             )
         } else {
             null

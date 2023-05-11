@@ -32,14 +32,15 @@ fun MainScreen() {
 
     val mainViewModel: MainViewModel = viewModel()
     val displayText by mainViewModel.displayText.collectAsState()
+    val displaySymbol by mainViewModel.displaySymbol.collectAsState()
 
     Column {
         val mDisplay = Display()
         val mCurrencySelector = CurrencySelector()
         val mKeyboard = Keyboard()
         val keyboardConfig = KeyboardConfig()
-        mDisplay.CustomDisplay(displayText = displayText, symbol = "€")
-        mCurrencySelector.CustomCurrencySelector()
+        mDisplay.CustomDisplay(displayText = displayText, symbol = displaySymbol)
+        mCurrencySelector.CustomCurrencySelector(onCurrencySelected = mainViewModel::onCurrencySelected)
         mKeyboard.CustomKeyboard(
             config = keyboardConfig,
             onClearButtonClick = mainViewModel::onClearButtonClicked,

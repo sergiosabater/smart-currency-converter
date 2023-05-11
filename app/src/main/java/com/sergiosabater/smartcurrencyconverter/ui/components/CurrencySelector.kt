@@ -34,7 +34,7 @@ class CurrencySelector {
     )
 
     @Composable
-    fun CustomCurrencySelector() {
+    fun CustomCurrencySelector(onCurrencySelected: (List<Currency>, String) -> Unit) {
         val context = LocalContext.current
         val currencies = remember {
             parseCurrencies(context)
@@ -57,7 +57,10 @@ class CurrencySelector {
                 isExpanded = isExpanded1,
                 onExpandedChange = onExpandedChange1,
                 selectedCurrency = selectedCurrency1,
-                onSelectedCountryChange = onSelectedCurrencyChange1,
+                onSelectedCurrencyChange = { selectedCurrency ->
+                    onSelectedCurrencyChange1(selectedCurrency)
+                    onCurrencySelected(currencies, selectedCurrency)
+                },
                 modifier = Modifier.weight(1f)
             )
 
@@ -75,7 +78,7 @@ class CurrencySelector {
                 isExpanded = isExpanded2,
                 onExpandedChange = onExpandedChange2,
                 selectedCurrency = selectedCurrency2,
-                onSelectedCountryChange = onSelectedCurrencyChange2,
+                onSelectedCurrencyChange = onSelectedCurrencyChange2,
                 modifier = Modifier.weight(1f)
             )
         }
@@ -87,7 +90,7 @@ class CurrencySelector {
         isExpanded: Boolean,
         onExpandedChange: (Boolean) -> Unit,
         selectedCurrency: String,
-        onSelectedCountryChange: (String) -> Unit,
+        onSelectedCurrencyChange: (String) -> Unit,
         modifier: Modifier = Modifier
     ) {
         Box(modifier.wrapContentHeight()) {
@@ -112,7 +115,7 @@ class CurrencySelector {
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-                                onSelectedCountryChange(currency.currencyName)
+                                onSelectedCurrencyChange(currency.currencyName)
                                 onExpandedChange(false)
                             }
                     ) {
