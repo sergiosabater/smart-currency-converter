@@ -34,11 +34,7 @@ class CurrencySelector {
     )
 
     @Composable
-    fun CustomCurrencySelector(onCurrencySelected: (List<Currency>, String) -> Unit) {
-        val context = LocalContext.current
-        val currencies = remember {
-            parseCurrencies(context)
-        }
+    fun CustomCurrencySelector(currencies: List<Currency>, onCurrencySelected: (List<Currency>, String) -> Unit) {
 
         val (isExpanded1, onExpandedChange1) = remember { mutableStateOf(false) }
         val (selectedCurrency1, onSelectedCurrencyChange1) = remember { mutableStateOf(currencies[0].currencyName) }

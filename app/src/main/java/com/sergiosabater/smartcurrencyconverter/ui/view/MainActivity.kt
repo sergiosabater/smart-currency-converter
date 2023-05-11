@@ -33,19 +33,23 @@ fun MainScreen() {
     val mainViewModel: MainViewModel = viewModel()
     val displayText by mainViewModel.displayText.collectAsState()
     val displaySymbol by mainViewModel.displaySymbol.collectAsState()
+    val currencies by mainViewModel.currencies.collectAsState()
 
-    Column {
-        val mDisplay = Display()
-        val mCurrencySelector = CurrencySelector()
-        val mKeyboard = Keyboard()
-        val keyboardConfig = KeyboardConfig()
-        mDisplay.CustomDisplay(displayText = displayText, symbol = displaySymbol)
-        mCurrencySelector.CustomCurrencySelector(onCurrencySelected = mainViewModel::onCurrencySelected)
-        mKeyboard.CustomKeyboard(
-            config = keyboardConfig,
-            onClearButtonClick = mainViewModel::onClearButtonClicked,
-            onNumericButtonClicked = mainViewModel::onNumericButtonClicked,
-            onBackspaceClicked = mainViewModel::onBackspaceClicked
-        )
+    // Comprueba que las monedas se hayan cargado antes de intentar mostrarlas
+    if (currencies.isNotEmpty()) {
+        Column {
+            val mDisplay = Display()
+            val mCurrencySelector = CurrencySelector()
+            val mKeyboard = Keyboard()
+            val keyboardConfig = KeyboardConfig()
+            mDisplay.CustomDisplay(displayText = displayText, symbol = displaySymbol)
+            mCurrencySelector.CustomCurrencySelector(currencies, mainViewModel::onCurrencySelected)
+            mKeyboard.CustomKeyboard(
+                config = keyboardConfig,
+                onClearButtonClick = mainViewModel::onClearButtonClicked,
+                onNumericButtonClicked = mainViewModel::onNumericButtonClicked,
+                onBackspaceClicked = mainViewModel::onBackspaceClicked
+            )
+        }
     }
 }
