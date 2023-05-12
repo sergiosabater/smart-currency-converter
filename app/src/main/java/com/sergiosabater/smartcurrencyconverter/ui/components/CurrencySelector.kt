@@ -34,14 +34,14 @@ class CurrencySelector {
     @Composable
     fun CustomCurrencySelector(
         currencies: List<Currency>,
-        onCurrencySelected: (List<Currency>, String) -> Unit
+        onCurrencySelected: (Currency, Currency) -> Unit
     ) {
 
         val (isExpanded1, onExpandedChange1) = remember { mutableStateOf(false) }
-        val (selectedCurrency1, onSelectedCurrencyChange1) = remember { mutableStateOf(currencies[0].currencyName) }
+        val (selectedCurrency1, onSelectedCurrencyChange1) = remember { mutableStateOf(currencies[0]) }
 
         val (isExpanded2, onExpandedChange2) = remember { mutableStateOf(false) }
-        val (selectedCurrency2, onSelectedCurrencyChange2) = remember { mutableStateOf(currencies[0].currencyName) }
+        val (selectedCurrency2, onSelectedCurrencyChange2) = remember { mutableStateOf(currencies[0]) }
 
         Row(
             modifier = Modifier
@@ -56,7 +56,7 @@ class CurrencySelector {
                 selectedCurrency = selectedCurrency1,
                 onSelectedCurrencyChange = { selectedCurrency ->
                     onSelectedCurrencyChange1(selectedCurrency)
-                    onCurrencySelected(currencies, selectedCurrency)
+                    onCurrencySelected(selectedCurrency, selectedCurrency2)
                 },
                 modifier = Modifier.weight(1f)
             )
@@ -75,7 +75,10 @@ class CurrencySelector {
                 isExpanded = isExpanded2,
                 onExpandedChange = onExpandedChange2,
                 selectedCurrency = selectedCurrency2,
-                onSelectedCurrencyChange = onSelectedCurrencyChange2,
+                onSelectedCurrencyChange = { selectedCurrency ->
+                    onSelectedCurrencyChange2(selectedCurrency)
+                    onCurrencySelected(selectedCurrency1, selectedCurrency)
+                },
                 modifier = Modifier.weight(1f)
             )
         }
@@ -86,8 +89,8 @@ class CurrencySelector {
         currencies: List<Currency>,
         isExpanded: Boolean,
         onExpandedChange: (Boolean) -> Unit,
-        selectedCurrency: String,
-        onSelectedCurrencyChange: (String) -> Unit,
+        selectedCurrency: Currency,
+        onSelectedCurrencyChange: (Currency) -> Unit,
         modifier: Modifier = Modifier
     ) {
         Box(modifier.wrapContentHeight()) {
@@ -95,7 +98,7 @@ class CurrencySelector {
                 modifier = modifier.clickable(onClick = { onExpandedChange(true) })
             ) {
                 Text(
-                    text = selectedCurrency,
+                    text = selectedCurrency.currencyName,
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier
                         .padding(start = 15.dp, top = 15.dp, bottom = 15.dp, end = 15.dp)
@@ -112,7 +115,7 @@ class CurrencySelector {
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-                                onSelectedCurrencyChange(currency.currencyName)
+                                onSelectedCurrencyChange(currency)
                                 onExpandedChange(false)
                             }
                     ) {

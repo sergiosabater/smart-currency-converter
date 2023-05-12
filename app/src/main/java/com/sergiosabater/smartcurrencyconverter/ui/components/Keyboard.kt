@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sergiosabater.smartcurrencyconverter.ui.components.config.KeyboardConfig
 import com.sergiosabater.smartcurrencyconverter.util.constant.SymbolConstants.BACKSPACE_SYMBOL_STRING
+import com.sergiosabater.smartcurrencyconverter.util.constant.SymbolConstants.CONVERSION_SYMBOL_STRING
 import com.sergiosabater.smartcurrencyconverter.util.constant.TextConstants.CLEAR_BUTTON_STRING
 import com.sergiosabater.smartcurrencyconverter.util.constant.TextConstants.COMMA_STRING
 
@@ -34,7 +35,8 @@ class Keyboard {
         config: KeyboardConfig,
         onClearButtonClick: () -> Unit,
         onNumericButtonClicked: (String) -> Unit,
-        onBackspaceClicked: () -> Unit
+        onBackspaceClicked: () -> Unit,
+        onConversionButtonClicked: () -> Unit
     ) {
         // BoxWithConstraints to get the available screen dimensions
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
@@ -63,6 +65,10 @@ class Keyboard {
 
                                             config.buttonSymbols[i][j] == BACKSPACE_SYMBOL_STRING -> {
                                                 onBackspaceClicked()
+                                            }
+
+                                            config.buttonSymbols[i][j] == CONVERSION_SYMBOL_STRING -> {
+                                                onConversionButtonClicked()
                                             }
 
                                             config.buttonSymbols[i][j].first()

@@ -12,8 +12,7 @@ import com.sergiosabater.smartcurrencyconverter.model.Currency
  */
 
 class HandleCurrencySelectionUseCase {
-    fun execute(currencies: List<Currency>, selectedCurrencyName: String): String {
-        val selectedCurrency = currencies.find { it.currencyName == selectedCurrencyName }
-        return selectedCurrency?.currencySymbol ?: " " // Cadena vacía si no encuentra valor
+    fun execute(currency: Currency): String {
+        return currency.currencySymbol
     }
 }

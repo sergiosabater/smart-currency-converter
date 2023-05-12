@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -36,7 +37,10 @@ fun MainScreen() {
     val currencies by mainViewModel.currencies.collectAsState()
 
     // Comprueba que las monedas se hayan cargado antes de intentar mostrarlas
-    if (currencies.isNotEmpty()) {
+    if (currencies.isEmpty()) {
+        // Muestra un spinner de carga o un mensaje de error
+        CircularProgressIndicator()
+    } else {
         Column {
             val mDisplay = Display()
             val mCurrencySelector = CurrencySelector()
@@ -48,7 +52,8 @@ fun MainScreen() {
                 config = keyboardConfig,
                 onClearButtonClick = mainViewModel::onClearButtonClicked,
                 onNumericButtonClicked = mainViewModel::onNumericButtonClicked,
-                onBackspaceClicked = mainViewModel::onBackspaceClicked
+                onBackspaceClicked = mainViewModel::onBackspaceClicked,
+                onConversionButtonClicked = mainViewModel::onConversionButtonClicked
             )
         }
     }
