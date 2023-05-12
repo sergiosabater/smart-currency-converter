@@ -1,6 +1,5 @@
 package com.sergiosabater.smartcurrencyconverter.usecase
 
-import com.sergiosabater.smartcurrencyconverter.util.format.formatWithThousandsSeparator
 import com.sergiosabater.smartcurrencyconverter.util.format.updateAndFormatDisplay
 
 class HandleNumericInputUseCase {

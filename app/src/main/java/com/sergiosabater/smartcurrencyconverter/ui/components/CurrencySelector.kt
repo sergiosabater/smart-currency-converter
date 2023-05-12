@@ -16,13 +16,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sergiosabater.smartcurrencyconverter.model.Currency
-import com.sergiosabater.smartcurrencyconverter.util.parser.parseCurrencies
 
 
 class CurrencySelector {
@@ -34,7 +32,10 @@ class CurrencySelector {
     )
 
     @Composable
-    fun CustomCurrencySelector(currencies: List<Currency>, onCurrencySelected: (List<Currency>, String) -> Unit) {
+    fun CustomCurrencySelector(
+        currencies: List<Currency>,
+        onCurrencySelected: (List<Currency>, String) -> Unit
+    ) {
 
         val (isExpanded1, onExpandedChange1) = remember { mutableStateOf(false) }
         val (selectedCurrency1, onSelectedCurrencyChange1) = remember { mutableStateOf(currencies[0].currencyName) }
