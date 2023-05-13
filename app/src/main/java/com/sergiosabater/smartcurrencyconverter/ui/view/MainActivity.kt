@@ -9,6 +9,8 @@ import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
@@ -37,13 +39,15 @@ fun MainScreen() {
     val displayText by mainViewModel.displayText.collectAsState()
     val displaySymbol by mainViewModel.displaySymbol.collectAsState()
     val currencies by mainViewModel.currencies.collectAsState()
-    val selectedCurrency1 by mainViewModel.selectedCurrency1.collectAsState()
-    val selectedCurrency2 by mainViewModel.selectedCurrency2.collectAsState()
 
     val mDisplay = Display()
     val mCurrencySelector = CurrencySelector()
     val mKeyboard = Keyboard()
     val keyboardConfig = KeyboardConfig()
+
+    // Define MutableState values to hold the conversion result and symbol for the second display
+    val conversionResult = remember { mutableStateOf("") }
+    val conversionSymbol = remember { mutableStateOf("") }
 
     // Comprueba que las monedas se hayan cargado antes de intentar mostrarlas
     if (currencies.isEmpty()) {
@@ -56,7 +60,7 @@ fun MainScreen() {
         Column {
             mDisplay.CustomDisplay(displayText = displayText, symbol = displaySymbol)
             Divider(color = Color.Gray, thickness = 2.dp) // Divider crea una línea horizontal
-            mDisplay.CustomDisplay(displayText = "", symbol = "") // Segundo Display
+            mDisplay.CustomDisplay(displayText = conversionResult.value, symbol = conversionSymbol.value) // Segundo Display
             mCurrencySelector.CustomCurrencySelector(
                 currencies,
                 mainViewModel::onCurrencySelected,
@@ -69,8 +73,10 @@ fun MainScreen() {
                 onNumericButtonClicked = mainViewModel::onNumericButtonClicked,
                 onBackspaceClicked = mainViewModel::onBackspaceClicked,
                 onConversionButtonClicked = {
-                    if (selectedCurrency1 != null && selectedCurrency2 != null) {
-                        mainViewModel.onConversionButtonClicked()
+                    val result = mainViewModel.onConversionButtonClicked()
+                    if (result != null) {
+                        conversionResult.value = result.first
+                        conversionSymbol.value = result.second
                     }
                 }
             )

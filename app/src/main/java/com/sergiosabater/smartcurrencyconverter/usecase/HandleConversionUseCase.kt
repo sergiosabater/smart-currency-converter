@@ -31,7 +31,7 @@ class HandleConversionUseCase {
         )
 
         val logMessage =
-            "$amount ${currency1.currencyName} --> $conversionResult ${currency2.currencyName} "
+            "$conversionResult"
         Log.d("Conversion", logMessage)
 
         return logMessage

@@ -70,14 +70,16 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _displaySymbol.value = handleCurrencySelectionUseCase.execute(selectedCurrency1)
     }
 
-    fun onConversionButtonClicked() {
+    fun onConversionButtonClicked(): Pair<String, String>? {
         // Comprueba que ambas monedas y la cantidad a convertir no sean nulas
         if (_selectedCurrency1.value != null && _selectedCurrency2.value != null && _displayText.value.isNotEmpty()) {
-            handleConversionUseCase.execute(
+            val conversionResult = handleConversionUseCase.execute(
                 _selectedCurrency1.value!!,
                 _selectedCurrency2.value!!,
                 _displayText.value
             )
+            return Pair(conversionResult, _selectedCurrency2.value?.currencySymbol ?: "")
         }
+        return null
     }
 }
