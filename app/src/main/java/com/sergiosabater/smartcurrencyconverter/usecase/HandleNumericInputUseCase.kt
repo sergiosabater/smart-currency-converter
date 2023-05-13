@@ -1,10 +1,13 @@
 package com.sergiosabater.smartcurrencyconverter.usecase
 
-import com.sergiosabater.smartcurrencyconverter.util.format.updateAndFormatDisplay
+import com.sergiosabater.smartcurrencyconverter.util.format.formatDisplay
+import com.sergiosabater.smartcurrencyconverter.util.format.updateDisplay
+
 
 class HandleNumericInputUseCase {
 
     fun execute(currentDisplay: String, digit: String): String {
-        return updateAndFormatDisplay(currentDisplay, digit)
+        val updatedDisplay = updateDisplay(currentDisplay, digit)
+        return formatDisplay(updatedDisplay)
     }
 }

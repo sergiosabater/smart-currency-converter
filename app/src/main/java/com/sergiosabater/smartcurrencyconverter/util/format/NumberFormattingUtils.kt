@@ -28,40 +28,46 @@ fun formatWithThousandsSeparator(number: String): String {
     return formatter.format(integerPart)
 }
 
+fun formatNumber(input: String): String {
+    // Reemplaza los puntos por comas
+    val replaceDot = input.replace(".", ",")
 
-/**
- * Actualiza el contenido del display con el nuevo dígito ingresado y lo formatea
- * con separadores de miles
- * @param currentDisplay el contenido actual del display
- * @param digit el dígito ingresado por el usuario
- * @return el nuevo contenido del display con separadores de miles
- */
-fun updateAndFormatDisplay(currentDisplay: String, digit: String): String {
+    // Separa la parte entera y decimal
+    val parts = replaceDot.split(",")
+
+    // Formatea la parte entera con separador de miles
+    val integerPart = formatWithThousandsSeparator(parts[0])
+
+    //Si la parte entera y la parte decimal son cero, devolverá la parte entera
+    return if(integerPart == "0" && parts[1] == "0") {
+        integerPart
+    } else {
+        if (parts.size > 1) "$integerPart,${parts[1]}" else integerPart
+    }
+
+}
+
+
+fun updateDisplay(currentDisplay: String, digit: String): String {
+    // si se presionó '0' y el display actual es '0', retorna el display actual
     if (digit == "0" && currentDisplay == "0") {
         return currentDisplay
     }
 
+    // si se presionó ',' y ya existe una ',' en el display actual, retorna el display actual
     if (digit == "," && currentDisplay.contains(",")) {
         return currentDisplay
     }
 
-    var newDisplay =
-        if (currentDisplay == "0" && digit != ",") digit else currentDisplay + digit
+    // si el display actual es '0' y el dígito presionado no es ',',
+    // retorna el dígito presionado; de lo contrario, añade el dígito al display actual
+    return if (currentDisplay == "0" && digit != ",") digit else currentDisplay + digit
+}
 
+fun formatDisplay(newDisplay: String): String {
     val parts = newDisplay.split(",")
-
     val integerPart = parts[0]
     val decimalPart = if (parts.size > 1) parts[1] else ""
-
-    if (digit == "," && decimalPart.isEmpty()) {
-        newDisplay = "$integerPart,"
-    } else if (integerPart == "") {
-        newDisplay = "0"
-    } else {
-        val formattedIntegerPart = formatWithThousandsSeparator(integerPart)
-        newDisplay =
-            if (decimalPart.isNotEmpty()) "$formattedIntegerPart,$decimalPart" else formattedIntegerPart
-    }
-
-    return newDisplay
+    val formattedIntegerPart = formatWithThousandsSeparator(integerPart)
+    return if (decimalPart.isNotEmpty() || newDisplay.endsWith(",")) "$formattedIntegerPart,$decimalPart" else formattedIntegerPart
 }

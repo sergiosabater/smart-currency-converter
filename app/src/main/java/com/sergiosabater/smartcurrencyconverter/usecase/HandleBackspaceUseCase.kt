@@ -1,13 +1,13 @@
 package com.sergiosabater.smartcurrencyconverter.usecase
 
 
-import com.sergiosabater.smartcurrencyconverter.util.format.updateAndFormatDisplay
+import com.sergiosabater.smartcurrencyconverter.util.format.formatDisplay
 
 class HandleBackspaceUseCase {
 
     fun execute(input: String): String {
         val updatedInput = removeLastCharacter(input)
-        return updateAndFormatDisplay(updatedInput, "")
+        return formatDisplay(updatedInput)
     }
 
     /**
