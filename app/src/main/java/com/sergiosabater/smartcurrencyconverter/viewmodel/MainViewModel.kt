@@ -30,8 +30,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _displaySymbol = MutableStateFlow("€")
     val displaySymbol: StateFlow<String> = _displaySymbol
 
-    private var selectedCurrency1 = MutableStateFlow<Currency?>(null)
-    private var selectedCurrency2 = MutableStateFlow<Currency?>(null)
+    private val _selectedCurrency1 = MutableStateFlow<Currency?>(null)
+    val selectedCurrency1: StateFlow<Currency?> = _selectedCurrency1
+
+    private val _selectedCurrency2 = MutableStateFlow<Currency?>(null)
+    val selectedCurrency2: StateFlow<Currency?> = _selectedCurrency2
 
     // Lista de monedas como StateFlow
     val currencies = MutableStateFlow<List<Currency>>(emptyList())
@@ -41,6 +44,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             val currencyList = async { parseCurrencies(getApplication()) }
             currencies.value = currencyList.await()
+
+            // Establecer Euro y Dólar estadounidense como las monedas seleccionadas por defecto
+            _selectedCurrency1.value = currencies.value.find { it.isoCode == "EUR" }
+            _selectedCurrency2.value = currencies.value.find { it.isoCode == "USD" }
         }
     }
 
@@ -57,18 +64,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _displayText.value = updatedInput
     }
 
-    fun onCurrencySelected(selectedCurrency1: Currency, selectedCurrency2: Currency){
-        this.selectedCurrency1.value = selectedCurrency1
-        this.selectedCurrency2.value = selectedCurrency2
+    fun onCurrencySelected(selectedCurrency1: Currency, selectedCurrency2: Currency) {
+        this._selectedCurrency1.value = selectedCurrency1
+        this._selectedCurrency2.value = selectedCurrency2
         _displaySymbol.value = handleCurrencySelectionUseCase.execute(selectedCurrency1)
     }
 
     fun onConversionButtonClicked() {
         // Comprueba que ambas monedas y la cantidad a convertir no sean nulas
-        if (selectedCurrency1.value != null && selectedCurrency2.value != null && _displayText.value.isNotEmpty()) {
+        if (_selectedCurrency1.value != null && _selectedCurrency2.value != null && _displayText.value.isNotEmpty()) {
             handleConversionUseCase.execute(
-                selectedCurrency1.value!!,
-                selectedCurrency2.value!!,
+                _selectedCurrency1.value!!,
+                _selectedCurrency2.value!!,
                 _displayText.value
             )
         }

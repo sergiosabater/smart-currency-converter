@@ -34,14 +34,12 @@ class CurrencySelector {
     @Composable
     fun CustomCurrencySelector(
         currencies: List<Currency>,
-        onCurrencySelected: (Currency, Currency) -> Unit
+        onCurrencySelected: (Currency, Currency) -> Unit,
+        defaultCurrency1: Currency,
+        defaultCurrency2: Currency
     ) {
-
-        val (isExpanded1, onExpandedChange1) = remember { mutableStateOf(false) }
-        val (selectedCurrency1, onSelectedCurrencyChange1) = remember { mutableStateOf(currencies[0]) }
-
-        val (isExpanded2, onExpandedChange2) = remember { mutableStateOf(false) }
-        val (selectedCurrency2, onSelectedCurrencyChange2) = remember { mutableStateOf(currencies[0]) }
+        val (selectedCurrency1, setSelectedCurrency1) = remember { mutableStateOf(defaultCurrency1) }
+        val (selectedCurrency2, setSelectedCurrency2) = remember { mutableStateOf(defaultCurrency2) }
 
         Row(
             modifier = Modifier
@@ -51,11 +49,9 @@ class CurrencySelector {
         ) {
             CustomExposedDropdown(
                 currencies = currencies,
-                isExpanded = isExpanded1,
-                onExpandedChange = onExpandedChange1,
                 selectedCurrency = selectedCurrency1,
                 onSelectedCurrencyChange = { selectedCurrency ->
-                    onSelectedCurrencyChange1(selectedCurrency)
+                    setSelectedCurrency1(selectedCurrency)
                     onCurrencySelected(selectedCurrency, selectedCurrency2)
                 },
                 modifier = Modifier.weight(1f)
@@ -72,11 +68,9 @@ class CurrencySelector {
 
             CustomExposedDropdown(
                 currencies = currencies,
-                isExpanded = isExpanded2,
-                onExpandedChange = onExpandedChange2,
                 selectedCurrency = selectedCurrency2,
                 onSelectedCurrencyChange = { selectedCurrency ->
-                    onSelectedCurrencyChange2(selectedCurrency)
+                    setSelectedCurrency2(selectedCurrency)
                     onCurrencySelected(selectedCurrency1, selectedCurrency)
                 },
                 modifier = Modifier.weight(1f)
@@ -87,15 +81,15 @@ class CurrencySelector {
     @Composable
     private fun CustomExposedDropdown(
         currencies: List<Currency>,
-        isExpanded: Boolean,
-        onExpandedChange: (Boolean) -> Unit,
         selectedCurrency: Currency,
         onSelectedCurrencyChange: (Currency) -> Unit,
         modifier: Modifier = Modifier
     ) {
+        val (isExpanded, setExpanded) = remember { mutableStateOf(false) }
+
         Box(modifier.wrapContentHeight()) {
             Box(
-                modifier = modifier.clickable(onClick = { onExpandedChange(true) })
+                modifier = modifier.clickable(onClick = { setExpanded(true) })
             ) {
                 Text(
                     text = selectedCurrency.currencyName,
@@ -108,7 +102,7 @@ class CurrencySelector {
 
             DropdownMenu(
                 expanded = isExpanded,
-                onDismissRequest = { onExpandedChange(false) }
+                onDismissRequest = { setExpanded(false) }
             ) {
                 currencies.forEach { currency ->
                     Box(
@@ -116,7 +110,7 @@ class CurrencySelector {
                             .fillMaxWidth()
                             .clickable {
                                 onSelectedCurrencyChange(currency)
-                                onExpandedChange(false)
+                                setExpanded(false)
                             }
                     ) {
                         Text(
