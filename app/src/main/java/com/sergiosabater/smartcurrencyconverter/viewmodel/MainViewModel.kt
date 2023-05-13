@@ -12,6 +12,7 @@ import com.sergiosabater.smartcurrencyconverter.usecase.HandleNumericInputUseCas
 import com.sergiosabater.smartcurrencyconverter.util.constant.NumberConstants.INITIAL_VALUE_STRING
 import com.sergiosabater.smartcurrencyconverter.util.parser.parseCurrencies
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -36,6 +37,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _selectedCurrency2 = MutableStateFlow<Currency?>(null)
     val selectedCurrency2: StateFlow<Currency?> = _selectedCurrency2
 
+    // Añadir las nuevas MutableStateFlow para el resultado de la conversión y el símbolo de moneda
+    private val _conversionResult = MutableStateFlow(INITIAL_VALUE_STRING)
+    val conversionResult: StateFlow<String> = _conversionResult
+
+    private val _conversionSymbol = MutableStateFlow("€")
+    val conversionSymbol: StateFlow<String> = _conversionSymbol
+
     // Lista de monedas como StateFlow
     val currencies = MutableStateFlow<List<Currency>>(emptyList())
 
@@ -53,24 +61,29 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun onClearButtonClicked() {
         _displayText.value = clearDisplayUseCase.execute()
+        triggerConversion()
     }
 
     fun onNumericButtonClicked(input: String) {
         _displayText.value = handleNumericInputUseCase.execute(_displayText.value, input)
+        // Lanzar una corrutina para ejecutar la conversión después de un segundo
+        triggerConversion()
     }
 
     fun onBackspaceClicked() {
         val updatedInput = handleBackspaceUseCase.execute(_displayText.value)
         _displayText.value = updatedInput
+        triggerConversion()
     }
 
     fun onCurrencySelected(selectedCurrency1: Currency, selectedCurrency2: Currency) {
         this._selectedCurrency1.value = selectedCurrency1
         this._selectedCurrency2.value = selectedCurrency2
         _displaySymbol.value = handleCurrencySelectionUseCase.execute(selectedCurrency1)
+        triggerConversion()
     }
 
-    fun onConversionButtonClicked(): Pair<String, String>? {
+    fun onConversionPerform(): Pair<String, String>? {
         // Comprueba que ambas monedas y la cantidad a convertir no sean nulas
         if (_selectedCurrency1.value != null && _selectedCurrency2.value != null && _displayText.value.isNotEmpty()) {
             val conversionResult = handleConversionUseCase.execute(
@@ -81,5 +94,25 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             return Pair(conversionResult, _selectedCurrency2.value?.currencySymbol ?: "")
         }
         return null
+    }
+
+    private fun triggerConversion() {
+        // Corutina dentro del viewModelScope. La corutina se cancelará cuando
+        // se destruya el ViewModel.
+        viewModelScope.launch {
+            // La función delay() suspende la corutina durante un tiempo determinado
+            // por timeMillis
+            delay(500)
+            // Llamamos a onConversionButtonClicked() para realizar
+            // la conversión y almacenamos el resultado en la variable conversionResult.
+
+            // Esto notificará a todos los observadores de _conversionResult que estos valores
+            // han cambiado.
+            val result = onConversionPerform()
+            if (result != null) {
+                _conversionResult.value = result.first
+                _conversionSymbol.value = result.second
+            }
+        }
     }
 }

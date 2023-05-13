@@ -35,8 +35,7 @@ class Keyboard {
         config: KeyboardConfig,
         onClearButtonClick: () -> Unit,
         onNumericButtonClicked: (String) -> Unit,
-        onBackspaceClicked: () -> Unit,
-        onConversionButtonClicked: () -> Unit
+        onBackspaceClicked: () -> Unit
     ) {
         // BoxWithConstraints to get the available screen dimensions
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
@@ -68,7 +67,7 @@ class Keyboard {
                                             }
 
                                             config.buttonSymbols[i][j] == CONVERSION_SYMBOL_STRING -> {
-                                                onConversionButtonClicked()
+                                                // TODO: Implement this part of the code later
                                             }
 
                                             config.buttonSymbols[i][j].first()
