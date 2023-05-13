@@ -5,9 +5,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sergiosabater.smartcurrencyconverter.ui.components.CurrencySelector
@@ -52,6 +55,8 @@ fun MainScreen() {
 
         Column {
             mDisplay.CustomDisplay(displayText = displayText, symbol = displaySymbol)
+            Divider(color = Color.Gray, thickness = 2.dp) // Divider crea una línea horizontal
+            mDisplay.CustomDisplay(displayText = "", symbol = "") // Segundo Display
             mCurrencySelector.CustomCurrencySelector(
                 currencies,
                 mainViewModel::onCurrencySelected,
