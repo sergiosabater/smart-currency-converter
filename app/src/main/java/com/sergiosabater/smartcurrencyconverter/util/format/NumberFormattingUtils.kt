@@ -28,6 +28,13 @@ fun formatWithThousandsSeparator(number: String): String {
     return formatter.format(integerPart)
 }
 
+/**
+ * Recibe una cadena de entrada y la formatea, reemplazando los puntos por comas,
+ * separando las partes enteras y decimales, y aplicando un formato con separadores de miles.
+ *
+ * @param input la cadena de texto a formatear.
+ * @return la cadena de texto formateada.
+ */
 fun formatNumber(input: String): String {
     // Reemplaza los puntos por comas
     val replaceDot = input.replace(".", ",")
@@ -39,7 +46,7 @@ fun formatNumber(input: String): String {
     val integerPart = formatWithThousandsSeparator(parts[0])
 
     //Si la parte entera y la parte decimal son cero, devolverá la parte entera
-    return if(integerPart == "0" && parts[1] == "0") {
+    return if (integerPart == "0" && parts[1] == "0") {
         integerPart
     } else {
         if (parts.size > 1) "$integerPart,${parts[1]}" else integerPart
@@ -47,7 +54,13 @@ fun formatNumber(input: String): String {
 
 }
 
-
+/**
+ * Actualiza la cadena con un nuevo dígito cumpliendo ciertas reglas.
+ *
+ * @param currentDisplay la cadena actual.
+ * @param digit el nuevo dígito para agregar a la cadena de visualización.
+ * @return la cadena actualizada.
+ */
 fun updateDisplay(currentDisplay: String, digit: String): String {
     // si se presionó '0' y el display actual es '0', retorna el display actual
     if (digit == "0" && currentDisplay == "0") {
@@ -64,10 +77,24 @@ fun updateDisplay(currentDisplay: String, digit: String): String {
     return if (currentDisplay == "0" && digit != ",") digit else currentDisplay + digit
 }
 
+/**
+ * Formatea una cadena separando la parte entera de la decimal,
+ * y aplicando un formato con separadores de miles a la parte entera.
+ *
+ * @param newDisplay la nueva cadena a formatear.
+ * @return la cadena formateada.
+ */
 fun formatDisplay(newDisplay: String): String {
+    // Divide la cadena en la parte entera y decimal
     val parts = newDisplay.split(",")
     val integerPart = parts[0]
     val decimalPart = if (parts.size > 1) parts[1] else ""
+
+    // Formatea la parte entera con separadores de miles
     val formattedIntegerPart = formatWithThousandsSeparator(integerPart)
-    return if (decimalPart.isNotEmpty() || newDisplay.endsWith(",")) "$formattedIntegerPart,$decimalPart" else formattedIntegerPart
+
+    // Si la parte decimal no está vacía o la cadena original termina con coma,
+    // mantiene la coma en la cadena final, de lo contrario, solo retorna la parte entera formateada
+    return if (decimalPart.isNotEmpty() || newDisplay.endsWith(","))
+        "$formattedIntegerPart,$decimalPart" else formattedIntegerPart
 }

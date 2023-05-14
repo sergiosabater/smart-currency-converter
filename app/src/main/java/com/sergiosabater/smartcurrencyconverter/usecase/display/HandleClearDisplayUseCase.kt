@@ -1,6 +1,6 @@
-package com.sergiosabater.smartcurrencyconverter.usecase
+package com.sergiosabater.smartcurrencyconverter.usecase.display
 
-class ClearDisplayUseCase {
+class HandleClearDisplayUseCase {
 
     /**
      * Función que retorna un valor de "0".

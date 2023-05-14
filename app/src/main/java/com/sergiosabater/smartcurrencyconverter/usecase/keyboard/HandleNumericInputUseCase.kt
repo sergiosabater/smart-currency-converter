@@ -1,4 +1,4 @@
-package com.sergiosabater.smartcurrencyconverter.usecase
+package com.sergiosabater.smartcurrencyconverter.usecase.keyboard
 
 import com.sergiosabater.smartcurrencyconverter.util.format.formatDisplay
 import com.sergiosabater.smartcurrencyconverter.util.format.updateDisplay

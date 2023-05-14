@@ -1,4 +1,4 @@
-package com.sergiosabater.smartcurrencyconverter.usecase
+package com.sergiosabater.smartcurrencyconverter.usecase.currencySelector
 
 import com.sergiosabater.smartcurrencyconverter.model.Currency
 

@@ -56,7 +56,10 @@ fun MainScreen() {
         Column {
             mDisplay.CustomDisplay(displayText = displayText, symbol = displaySymbol)
             Divider(color = Color.Gray, thickness = 2.dp) // Divider crea una línea horizontal
-            mDisplay.CustomDisplay(displayText = conversionResult, symbol = conversionSymbol) // Segundo Display
+            mDisplay.CustomDisplay(
+                displayText = conversionResult,
+                symbol = conversionSymbol
+            ) // Segundo Display
             mCurrencySelector.CustomCurrencySelector(
                 currencies,
                 mainViewModel::onCurrencySelected,
