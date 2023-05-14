@@ -3,7 +3,7 @@ package com.sergiosabater.smartcurrencyconverter.util.parser
 import android.content.Context
 import com.google.gson.JsonParser
 import com.sergiosabater.smartcurrencyconverter.R
-import com.sergiosabater.smartcurrencyconverter.model.Currency
+import com.sergiosabater.smartcurrencyconverter.domain.model.Currency
 import java.io.BufferedReader
 import java.io.InputStreamReader
 

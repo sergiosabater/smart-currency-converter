@@ -1,4 +1,4 @@
-package com.sergiosabater.smartcurrencyconverter.model
+package com.sergiosabater.smartcurrencyconverter.domain.model
 
 data class Currency(
     val isoCode: String,

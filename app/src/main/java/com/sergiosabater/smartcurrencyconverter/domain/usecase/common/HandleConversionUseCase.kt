@@ -1,6 +1,6 @@
-package com.sergiosabater.smartcurrencyconverter.usecase.common
+package com.sergiosabater.smartcurrencyconverter.domain.usecase.common
 
-import com.sergiosabater.smartcurrencyconverter.model.Currency
+import com.sergiosabater.smartcurrencyconverter.domain.model.Currency
 import com.sergiosabater.smartcurrencyconverter.util.conversion.convertCurrencyAmount
 import com.sergiosabater.smartcurrencyconverter.util.format.formatNumber
 import java.math.BigDecimal

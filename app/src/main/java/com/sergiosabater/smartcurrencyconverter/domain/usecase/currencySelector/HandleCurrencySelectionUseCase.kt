@@ -1,6 +1,6 @@
-package com.sergiosabater.smartcurrencyconverter.usecase.currencySelector
+package com.sergiosabater.smartcurrencyconverter.domain.usecase.currencySelector
 
-import com.sergiosabater.smartcurrencyconverter.model.Currency
+import com.sergiosabater.smartcurrencyconverter.domain.model.Currency
 
 
 /**

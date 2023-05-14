@@ -1,4 +1,4 @@
-package com.sergiosabater.smartcurrencyconverter.usecase.display
+package com.sergiosabater.smartcurrencyconverter.domain.usecase.display
 
 /**
  * Caso de uso que maneja la acción de limpiar el display en la aplicación.

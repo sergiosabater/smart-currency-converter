@@ -1,11 +1,10 @@
-package com.sergiosabater.smartcurrencyconverter.data
+package com.sergiosabater.smartcurrencyconverter.data.network
 
+import com.sergiosabater.smartcurrencyconverter.util.constant.Config.BASE_URL
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
-
-    private const val BASE_URL = "https://openexchangerates.org/"
 
     val instance: ApiInterface by lazy {
         val retrofit = Retrofit.Builder()
