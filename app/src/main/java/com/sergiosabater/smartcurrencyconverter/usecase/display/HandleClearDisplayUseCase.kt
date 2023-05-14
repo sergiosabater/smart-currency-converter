@@ -1,10 +1,14 @@
 package com.sergiosabater.smartcurrencyconverter.usecase.display
 
+/**
+ * Caso de uso que maneja la acción de limpiar el display en la aplicación.
+ */
 class HandleClearDisplayUseCase {
 
     /**
-     * Función que retorna un valor de "0".
-     * @return valor de "0" como String.
+     * Limpia el display, restableciéndolo a su valor inicial de "0".
+     *
+     * @return Una cadena de texto que representa el valor inicial del display ("0").
      */
     fun execute(): String {
         return "0"

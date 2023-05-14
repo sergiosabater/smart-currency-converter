@@ -3,6 +3,9 @@ package com.sergiosabater.smartcurrencyconverter.usecase.keyboard
 
 import com.sergiosabater.smartcurrencyconverter.util.format.formatDisplay
 
+/**
+ * Caso de uso que maneja la acción del botón de retroceso en la aplicación.
+ */
 class HandleBackspaceUseCase {
 
     fun execute(input: String): String {
@@ -14,7 +17,7 @@ class HandleBackspaceUseCase {
      *
      * Elimina el último carácter de una cadena dada. Si la cadena es vacía o contiene
      * solo "0" o tiene una longitud de 1, se devuelve "0".
-     * Si el último carácter es una coma (",") también se elimina.
+     * Si el penúltimo carácter es una coma (",") también se elimina.
      * @param input La cadena de entrada a procesar.
      * @return La cadena procesada con el último carácter eliminado.
      */

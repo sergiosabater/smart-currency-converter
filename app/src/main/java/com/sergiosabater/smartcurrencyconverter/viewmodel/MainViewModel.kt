@@ -10,6 +10,9 @@ import com.sergiosabater.smartcurrencyconverter.usecase.display.HandleClearDispl
 import com.sergiosabater.smartcurrencyconverter.usecase.keyboard.HandleBackspaceUseCase
 import com.sergiosabater.smartcurrencyconverter.usecase.keyboard.HandleNumericInputUseCase
 import com.sergiosabater.smartcurrencyconverter.util.constant.NumberConstants.INITIAL_VALUE_STRING
+import com.sergiosabater.smartcurrencyconverter.util.constant.SymbolConstants.EURO
+import com.sergiosabater.smartcurrencyconverter.util.constant.TextConstants.AMERICAN_DOLLAR_ISO_CODE
+import com.sergiosabater.smartcurrencyconverter.util.constant.TextConstants.EURO_ISO_CODE
 import com.sergiosabater.smartcurrencyconverter.util.parser.parseCurrencies
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
@@ -19,11 +22,16 @@ import kotlinx.coroutines.launch
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
+    // Los casos de uso que manejan la lógica de negocio y son instanciados en el ViewModel
     private val handleClearDisplayUseCase = HandleClearDisplayUseCase()
     private val handleNumericInputUseCase = HandleNumericInputUseCase()
     private val handleBackspaceUseCase = HandleBackspaceUseCase()
     private val handleCurrencySelectionUseCase = HandleCurrencySelectionUseCase()
     private val handleConversionUseCase = HandleConversionUseCase()
+
+    // Los StateFlows para manejar el estado de las vistas
+
+    val currencies = MutableStateFlow<List<Currency>>(emptyList())
 
     private val _displayText = MutableStateFlow(INITIAL_VALUE_STRING)
     val displayText: StateFlow<String> = _displayText
@@ -37,28 +45,20 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _selectedCurrency2 = MutableStateFlow<Currency?>(null)
     val selectedCurrency2: StateFlow<Currency?> = _selectedCurrency2
 
-    // Añadir las nuevas MutableStateFlow para el resultado de la conversión y el símbolo de moneda
     private val _conversionResult = MutableStateFlow(INITIAL_VALUE_STRING)
     val conversionResult: StateFlow<String> = _conversionResult
 
-    private val _conversionSymbol = MutableStateFlow("€")
+    private val _conversionSymbol = MutableStateFlow(EURO)
     val conversionSymbol: StateFlow<String> = _conversionSymbol
 
-    // Lista de monedas como StateFlow
-    val currencies = MutableStateFlow<List<Currency>>(emptyList())
 
     init {
-        // Inicia la carga de monedas en un hilo de background
-        viewModelScope.launch {
-            val currencyList = async { parseCurrencies(getApplication()) }
-            currencies.value = currencyList.await()
-
-            // Establecer Euro y Dólar estadounidense como las monedas seleccionadas por defecto
-            _selectedCurrency1.value = currencies.value.find { it.isoCode == "EUR" }
-            _selectedCurrency2.value = currencies.value.find { it.isoCode == "USD" }
-        }
+        loadCurrencies()
     }
 
+    // Los métodos siguientes son los eventos que se disparan desde las vistas
+    // Cada uno de ellos llama a su respectivo caso de uso
+    // y actualiza el estado de la vista correspondiente
     fun onClearButtonClicked() {
         _displayText.value = handleClearDisplayUseCase.execute()
         triggerConversion()
@@ -66,7 +66,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun onNumericButtonClicked(input: String) {
         _displayText.value = handleNumericInputUseCase.execute(_displayText.value, input)
-        // Lanzar una corrutina para ejecutar la conversión después de un segundo
         triggerConversion()
     }
 
@@ -83,19 +82,21 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         triggerConversion()
     }
 
-    fun onConversionPerform(): Pair<String, String>? {
-        // Comprueba que ambas monedas y la cantidad a convertir no sean nulas
-        if (_selectedCurrency1.value != null && _selectedCurrency2.value != null && _displayText.value.isNotEmpty()) {
-            val conversionResult = handleConversionUseCase.execute(
-                _selectedCurrency1.value!!,
-                _selectedCurrency2.value!!,
-                _displayText.value
-            )
-            return Pair(conversionResult, _selectedCurrency2.value?.currencySymbol ?: "")
+    // Este método carga las monedas de manera asíncrona (mediante corrutina)
+    // las monedas con los códigos ISO "EUR" y "USD" se seleccionan como
+    // las monedas iniciales en el CurrencySelector
+    private fun loadCurrencies() {
+        viewModelScope.launch {
+            val currencyList = async { parseCurrencies(getApplication()) }
+            currencies.value = currencyList.await()
+            _selectedCurrency1.value = currencies.value.find { it.isoCode == EURO_ISO_CODE }
+            _selectedCurrency2.value =
+                currencies.value.find { it.isoCode == AMERICAN_DOLLAR_ISO_CODE }
         }
-        return null
     }
 
+    // Este método se utiliza para iniciar la conversión después de un pequeño retardo.
+    // para evitar conversiones innecesarias
     private fun triggerConversion() {
         // Corutina dentro del viewModelScope. La corutina se cancelará cuando
         // se destruya el ViewModel.
@@ -114,5 +115,19 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 _conversionSymbol.value = result.second
             }
         }
+    }
+
+    // Este método realiza la conversión de monedas utilizando el caso de uso
+    // y actualiza el estado de la interfaz de usuario correspondiente
+    private fun onConversionPerform(): Pair<String, String>? {
+        if (_selectedCurrency1.value != null && _selectedCurrency2.value != null && _displayText.value.isNotEmpty()) {
+            val conversionResult = handleConversionUseCase.execute(
+                _selectedCurrency1.value!!,
+                _selectedCurrency2.value!!,
+                _displayText.value
+            )
+            return Pair(conversionResult, _selectedCurrency2.value?.currencySymbol ?: "")
+        }
+        return null
     }
 }

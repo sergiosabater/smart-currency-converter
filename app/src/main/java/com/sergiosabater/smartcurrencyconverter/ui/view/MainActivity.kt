@@ -36,8 +36,8 @@ fun MainScreen() {
     val mainViewModel: MainViewModel = viewModel()
     val displayText by mainViewModel.displayText.collectAsState()
     val displaySymbol by mainViewModel.displaySymbol.collectAsState()
-    val conversionResult by mainViewModel.conversionResult.collectAsState()   // Agregado
-    val conversionSymbol by mainViewModel.conversionSymbol.collectAsState()   // Agregado
+    val conversionResult by mainViewModel.conversionResult.collectAsState()
+    val conversionSymbol by mainViewModel.conversionSymbol.collectAsState()
     val currencies by mainViewModel.currencies.collectAsState()
 
     val mDisplay = Display()
@@ -54,18 +54,27 @@ fun MainScreen() {
         val defaultCurrency2 = currencies.find { it.isoCode == "USD" } ?: currencies[0]
 
         Column {
+            // Primer display
             mDisplay.CustomDisplay(displayText = displayText, symbol = displaySymbol)
-            Divider(color = Color.Gray, thickness = 2.dp) // Divider crea una línea horizontal
+
+            // Divider crea una línea horizontal entre los dos displays
+            Divider(color = Color.Gray, thickness = 2.dp)
+
+            // Segundo display
             mDisplay.CustomDisplay(
                 displayText = conversionResult,
                 symbol = conversionSymbol
-            ) // Segundo Display
+            )
+
+            // Selector de monedas
             mCurrencySelector.CustomCurrencySelector(
                 currencies,
                 mainViewModel::onCurrencySelected,
                 defaultCurrency1,
                 defaultCurrency2
             )
+            
+            //Teclado
             mKeyboard.CustomKeyboard(
                 config = keyboardConfig,
                 onClearButtonClick = mainViewModel::onClearButtonClicked,
