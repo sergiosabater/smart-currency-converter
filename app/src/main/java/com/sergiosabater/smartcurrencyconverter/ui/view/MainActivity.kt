@@ -34,11 +34,15 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainScreen() {
     val mainViewModel: MainViewModel = viewModel()
+
+    // Recolectamos los StateFlow del ViewModel como un State en Compose
     val displayText by mainViewModel.displayText.collectAsState()
     val displaySymbol by mainViewModel.displaySymbol.collectAsState()
     val conversionResult by mainViewModel.conversionResult.collectAsState()
     val conversionSymbol by mainViewModel.conversionSymbol.collectAsState()
     val currencies by mainViewModel.currencies.collectAsState()
+    val defaultCurrency1 by mainViewModel.selectedCurrency1.collectAsState()
+    val defaultCurrency2 by mainViewModel.selectedCurrency2.collectAsState()
 
     val mDisplay = Display()
     val mCurrencySelector = CurrencySelector()
@@ -50,9 +54,6 @@ fun MainScreen() {
         // Muestra un spinner de carga o un mensaje de error
         CircularProgressIndicator()
     } else {
-        val defaultCurrency1 = currencies.find { it.isoCode == "EUR" } ?: currencies[0]
-        val defaultCurrency2 = currencies.find { it.isoCode == "USD" } ?: currencies[0]
-
         Column {
             // Primer display
             mDisplay.CustomDisplay(displayText = displayText, symbol = displaySymbol)
@@ -70,10 +71,10 @@ fun MainScreen() {
             mCurrencySelector.CustomCurrencySelector(
                 currencies,
                 mainViewModel::onCurrencySelected,
-                defaultCurrency1,
-                defaultCurrency2
+                defaultCurrency1 ?: currencies[0],
+                defaultCurrency2 ?: currencies[0]
             )
-            
+
             //Teclado
             mKeyboard.CustomKeyboard(
                 config = keyboardConfig,

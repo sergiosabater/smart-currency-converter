@@ -10,6 +10,7 @@ import com.sergiosabater.smartcurrencyconverter.usecase.display.HandleClearDispl
 import com.sergiosabater.smartcurrencyconverter.usecase.keyboard.HandleBackspaceUseCase
 import com.sergiosabater.smartcurrencyconverter.usecase.keyboard.HandleNumericInputUseCase
 import com.sergiosabater.smartcurrencyconverter.util.constant.NumberConstants.INITIAL_VALUE_STRING
+import com.sergiosabater.smartcurrencyconverter.util.constant.SymbolConstants.AMERICAN_DOLLAR
 import com.sergiosabater.smartcurrencyconverter.util.constant.SymbolConstants.EURO
 import com.sergiosabater.smartcurrencyconverter.util.constant.TextConstants.AMERICAN_DOLLAR_ISO_CODE
 import com.sergiosabater.smartcurrencyconverter.util.constant.TextConstants.EURO_ISO_CODE
@@ -21,7 +22,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
-
     // Los casos de uso que manejan la lógica de negocio y son instanciados en el ViewModel
     private val handleClearDisplayUseCase = HandleClearDisplayUseCase()
     private val handleNumericInputUseCase = HandleNumericInputUseCase()
@@ -30,13 +30,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val handleConversionUseCase = HandleConversionUseCase()
 
     // Los StateFlows para manejar el estado de las vistas
-
     val currencies = MutableStateFlow<List<Currency>>(emptyList())
 
     private val _displayText = MutableStateFlow(INITIAL_VALUE_STRING)
     val displayText: StateFlow<String> = _displayText
 
-    private val _displaySymbol = MutableStateFlow("€")
+    private val _displaySymbol = MutableStateFlow(EURO)
     val displaySymbol: StateFlow<String> = _displaySymbol
 
     private val _selectedCurrency1 = MutableStateFlow<Currency?>(null)
@@ -48,9 +47,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _conversionResult = MutableStateFlow(INITIAL_VALUE_STRING)
     val conversionResult: StateFlow<String> = _conversionResult
 
-    private val _conversionSymbol = MutableStateFlow(EURO)
+    private val _conversionSymbol = MutableStateFlow(AMERICAN_DOLLAR)
     val conversionSymbol: StateFlow<String> = _conversionSymbol
-
 
     init {
         loadCurrencies()
@@ -86,12 +84,25 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     // las monedas con los códigos ISO "EUR" y "USD" se seleccionan como
     // las monedas iniciales en el CurrencySelector
     private fun loadCurrencies() {
+        // La función launch inicia una nueva corrutina en 'viewModelScope'.
+        // Este scope está ligado al ciclo de vida del ViewModel.
         viewModelScope.launch {
+            // Utilizamos 'async' para realizar la operación en segundo plano
             val currencyList = async { parseCurrencies(getApplication()) }
+
+            // 'await()' suspende la corrutina hasta que 'async' haya terminado
             currencies.value = currencyList.await()
+
+            // Buscamos en la lista de monedas la que tenga el código ISO igual a 'EURO_ISO_CODE'
+            // y la asignamos a '_selectedCurrency1'. Si no se encuentra ninguna,
+            // se asigna la primera moneda de la lista o null si la lista está vacía.
             _selectedCurrency1.value = currencies.value.find { it.isoCode == EURO_ISO_CODE }
+                ?: currencies.value.firstOrNull()
+
+            // Hacemos lo mismo con '_selectedCurrency2', buscando el código ISO 'AMERICAN_DOLLAR_ISO_CODE'.
             _selectedCurrency2.value =
                 currencies.value.find { it.isoCode == AMERICAN_DOLLAR_ISO_CODE }
+                    ?: currencies.value.firstOrNull()
         }
     }
 
