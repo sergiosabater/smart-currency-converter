@@ -18,22 +18,26 @@ import java.io.InputStreamReader
  */
 fun parseCurrencies(context: Context): List<Currency> {
     val jsonString = readRawResource(context, R.raw.currency_dictionary)
-
-    val jsonElement = JsonParser.parseString(jsonString)
-    val jsonObject = jsonElement.asJsonObject
+    val jsonArray = JsonParser.parseString(jsonString).asJsonArray
 
     val exchangeRates = readConversionRates(context, R.raw.currency_rates)
 
-    return jsonObject.entrySet().mapNotNull { entry ->
-        val currencyIsoCode = entry.key
-        val currencyInfo = entry.value.asJsonObject
+    return jsonArray.mapNotNull { element ->
+        val currencyInfo = element.asJsonObject
 
-        val currencyName = currencyInfo.get("currency_name")?.asString
+        val currencyIsoCode = currencyInfo.get("iso_code")?.asString
+        val currencyName = currencyInfo.get("name")?.asString
         val countryName = currencyInfo.get("country")?.asString
-        val currencySymbol = currencyInfo.get("currency_symbol")?.asString
+        val currencySymbol = currencyInfo.get("symbol")?.asString
         val exchangeRate = exchangeRates[currencyIsoCode]
 
-        if (currencyName != null && countryName != null && exchangeRate != null && currencySymbol != null) {
+        if (
+            currencyIsoCode != null &&
+            currencyName != null &&
+            countryName != null &&
+            exchangeRate != null &&
+            currencySymbol != null
+        ) {
             Currency(
                 isoCode = currencyIsoCode,
                 countryName = countryName,

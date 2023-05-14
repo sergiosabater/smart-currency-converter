@@ -1,182 +1,218 @@
-{
-  "ARS": {
-    "currency_name": "Argentine Peso",
+[
+  {
+    "iso_code": "ARS",
+    "name": "Argentine Peso",
     "country": "Argentina",
-    "currency_symbol": "$"
+    "symbol": "$"
   },
-  "AUD": {
-    "currency_name": "Australian Dollar",
+  {
+    "iso_code": "AUD",
+    "name": "Australian Dollar",
     "country": "Australia",
-    "currency_symbol": "$"
+    "symbol": "$"
   },
-  "BRL": {
-    "currency_name": "Brazilian Real",
+  {
+    "iso_code": "BRL",
+    "name": "Brazilian Real",
     "country": "Brazil",
-    "currency_symbol": "R$"
+    "symbol": "R$"
   },
-  "BYN": {
-    "currency_name": "Belarusian Ruble",
+  {
+    "iso_code": "BYN",
+    "name": "Belarusian Ruble",
     "country": "Belarus",
-    "currency_symbol": "Br"
+    "symbol": "Br"
   },
-  "CAD": {
-    "currency_name": "Canadian Dollar",
+  {
+    "iso_code": "CAD",
+    "name": "Canadian Dollar",
     "country": "Canada",
-    "currency_symbol": "$"
+    "symbol": "$"
   },
-  "CHF": {
-    "currency_name": "Swiss Franc",
+  {
+    "iso_code": "CHF",
+    "name": "Swiss Franc",
     "country": "Switzerland",
-    "currency_symbol": "Fr"
+    "symbol": "Fr"
   },
-  "CLP": {
+  {
+    "iso_code": "CLP",
     "name": "Chilean Peso",
     "country": "Chile",
-    "currency_symbol": "$"
+    "symbol": "$"
   },
-  "CNY": {
-    "currency_name": "Chinese Yuan",
+  {
+    "iso_code": "CNY",
+    "name": "Chinese Yuan",
     "country": "China",
-    "currency_symbol": "¥"
+    "symbol": "¥"
   },
-  "COP": {
+  {
+    "iso_code": "COP",
     "name": "Colombian Peso",
     "country": "Colombia",
-    "currency_symbol": "$"
+    "symbol": "$"
   },
-  "CZK": {
-    "currency_name": "Czech Koruna",
+  {
+    "iso_code": "CZK",
+    "name": "Czech Koruna",
     "country": "Czech Republic",
-    "currency_symbol": "Kč"
+    "symbol": "Kč"
   },
-  "EUR": {
-    "currency_name": "Euro",
+  {
+    "iso_code": "EUR",
+    "name": "Euro",
     "country": "Eurozone",
-    "currency_symbol": "€"
+    "symbol": "€"
   },
-  "GBP": {
-    "currency_name": "British Pound Sterling",
+  {
+    "iso_code": "GBP",
+    "name": "British Pound Sterling",
     "country": "United Kingdom",
-    "currency_symbol": "£"
+    "symbol": "£"
   },
-  "HKD": {
-    "currency_name": "Hong Kong Dollar",
+  {
+    "iso_code": "HKD",
+    "name": "Hong Kong Dollar",
     "country": "Hong Kong",
-    "currency_symbol": "$"
+    "symbol": "$"
   },
-  "IDR": {
-    "currency_name": "Indonesian Rupiah",
+  {
+    "iso_code": "IDR",
+    "name": "Indonesian Rupiah",
     "country": "Indonesia",
-    "currency_symbol": "Rp"
+    "symbol": "Rp"
   },
-  "ILS": {
-    "currency_name": "Israeli New Sheqel",
+  {
+    "iso_code": "ILS",
+    "name": "Israeli New Sheqel",
     "country": "Israel",
-    "currency_symbol": "₪"
+    "symbol": "₪"
   },
-  "INR": {
-    "currency_name": "Indian Rupee",
+  {
+    "iso_code": "INR",
+    "name": "Indian Rupee",
     "country": "India",
-    "currency_symbol": "₹"
+    "symbol": "₹"
   },
-  "JPY": {
-    "currency_name": "Japanese Yen",
+  {
+    "iso_code": "JPY",
+    "name": "Japanese Yen",
     "country": "Japan",
-    "currency_symbol": "¥"
+    "symbol": "¥"
   },
-  "KRW": {
-    "currency_name": "South Korean Won",
+  {
+    "iso_code": "KRW",
+    "name": "South Korean Won",
     "country": "South Korea",
-    "currency_symbol": "₩"
+    "symbol": "₩"
   },
-  "MXN": {
-    "currency_name": "Mexican Peso",
+  {
+    "iso_code": "MXN",
+    "name": "Mexican Peso",
     "country": "Mexico",
-    "currency_symbol": "$"
+    "symbol": "$"
   },
-  "MYR": {
-    "currency_name": "Malaysian Ringgit",
+  {
+    "iso_code": "MYR",
+    "name": "Malaysian Ringgit",
     "country": "Malaysia",
-    "currency_symbol": "RM"
+    "symbol": "RM"
   },
-  "NOK": {
-    "currency_name": "Norwegian Krone",
+  {
+    "iso_code": "NOK",
+    "name": "Norwegian Krone",
     "country": "Norway",
-    "currency_symbol": "kr"
+    "symbol": "kr"
   },
-  "NZD": {
-    "currency_name": "New Zealand Dollar",
+  {
+    "iso_code": "NZD",
+    "name": "New Zealand Dollar",
     "country": "New Zealand",
-    "currency_symbol": "$"
+    "symbol": "$"
   },
-  "PEN": {
+  {
+    "iso_code": "PEN",
     "name": "Peruvian Sol",
     "country": "Peru",
-    "currency_symbol": "S/"
+    "symbol": "S/"
   },
-  "PHP": {
-    "currency_name": "Philippine Peso",
+  {
+    "iso_code": "PHP",
+    "name": "Philippine Peso",
     "country": "Philippines",
-    "currency_symbol": "₱"
+    "symbol": "₱"
   },
-  "PLN": {
-    "currency_name": "Polish Zloty",
+  {
+    "iso_code": "PLN",
+    "name": "Polish Zloty",
     "country": "Poland",
-    "currency_symbol": "zł"
+    "symbol": "zł"
   },
-  "RUB": {
-    "currency_name": "Russian Ruble",
+  {
+    "iso_code": "RUB",
+    "name": "Russian Ruble",
     "country": "Russia",
-    "currency_symbol": "₽"
+    "symbol": "₽"
   },
-  "SAR": {
-    "currency_name": "Saudi Riyal",
+  {
+    "iso_code": "SAR",
+    "name": "Saudi Riyal",
     "country": "Saudi Arabia",
-    "currency_symbol": "ر.س"
+    "symbol": "ر.س"
   },
-  "SEK": {
-    "currency_name": "Swedish Krona",
+  {
+    "iso_code": "SEK",
+    "name": "Swedish Krona",
     "country": "Sweden",
-    "currency_symbol": "kr"
+    "symbol": "kr"
   },
-  "SGD": {
-    "currency_name": "Singapore Dollar",
+  {
+    "iso_code": "SGD",
+    "name": "Singapore Dollar",
     "country": "Singapore",
-    "currency_symbol": "$"
+    "symbol": "$"
   },
-  "THB": {
-    "currency_name": "Thai Baht",
+  {
+    "iso_code": "THB",
+    "name": "Thai Baht",
     "country": "Thailand",
-    "currency_symbol": "฿"
+    "symbol": "฿"
   },
-  "TND": {
-    "currency_name": "Tunisian Dinar",
+  {
+    "iso_code": "TND",
+    "name": "Tunisian Dinar",
     "country": "Tunisia",
-    "currency_symbol": "د.ت"
+    "symbol": "د.ت"
   },
-  "TRY": {
-    "currency_name": "Turkish Lira",
+  {
+    "iso_code": "TRY",
+    "name": "Turkish Lira",
     "country": "Turkey",
-    "currency_symbol": "₺"
+    "symbol": "₺"
   },
-  "TWD": {
-    "currency_name": "New Taiwan Dollar",
+  {
+    "iso_code": "TWD",
+    "name": "New Taiwan Dollar",
     "country": "Taiwan",
-    "currency_symbol": "NT$"
+    "symbol": "NT$"
   },
-  "USD": {
-    "currency_name": "US Dollar",
+  {
+    "iso_code": "USD",
+    "name": "US Dollar",
     "country": "United States",
-    "currency_symbol": "$"
+    "symbol": "$"
   },
-  "UYU": {
+  {
+    "iso_code": "UYU",
     "name": "Uruguayan Peso",
     "country": "Uruguay",
-    "currency_symbol": "$"
+    "symbol": "$"
   },
-  "ZAR": {
-    "currency_name": "South African Rand",
+  {
+    "iso_code": "ZAR",
+    "name": "South African Rand",
     "country": "South Africa",
-    "currency_symbol": "R"
+    "symbol": "R"
   }
-}
+]
