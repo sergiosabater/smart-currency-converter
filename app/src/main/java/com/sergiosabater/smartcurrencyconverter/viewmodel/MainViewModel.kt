@@ -1,14 +1,18 @@
 package com.sergiosabater.smartcurrencyconverter.viewmodel
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.sergiosabater.smartcurrencyconverter.data.network.ApiResult
 import com.sergiosabater.smartcurrencyconverter.domain.model.Currency
+import com.sergiosabater.smartcurrencyconverter.domain.model.CurrencyRateResponse
 import com.sergiosabater.smartcurrencyconverter.domain.usecase.common.HandleConversionUseCase
 import com.sergiosabater.smartcurrencyconverter.domain.usecase.currencySelector.HandleCurrencySelectionUseCase
 import com.sergiosabater.smartcurrencyconverter.domain.usecase.display.HandleClearDisplayUseCase
 import com.sergiosabater.smartcurrencyconverter.domain.usecase.keyboard.HandleBackspaceUseCase
 import com.sergiosabater.smartcurrencyconverter.domain.usecase.keyboard.HandleNumericInputUseCase
+import com.sergiosabater.smartcurrencyconverter.repository.CurrencyRepository
 import com.sergiosabater.smartcurrencyconverter.util.constant.NumberConstants.INITIAL_VALUE_STRING
 import com.sergiosabater.smartcurrencyconverter.util.constant.SymbolConstants.AMERICAN_DOLLAR
 import com.sergiosabater.smartcurrencyconverter.util.constant.SymbolConstants.EURO
@@ -21,7 +25,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class MainViewModel(application: Application) : AndroidViewModel(application) {
+class MainViewModel(application: Application, private val currencyRepository: CurrencyRepository) :
+    AndroidViewModel(application) {
     // Los casos de uso que manejan la lógica de negocio y son instanciados en el ViewModel
     private val handleClearDisplayUseCase = HandleClearDisplayUseCase()
     private val handleNumericInputUseCase = HandleNumericInputUseCase()
@@ -87,22 +92,41 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         // La función launch inicia una nueva corrutina en 'viewModelScope'.
         // Este scope está ligado al ciclo de vida del ViewModel.
         viewModelScope.launch {
-            // Utilizamos 'async' para realizar la operación en segundo plano
-            val currencyList = async { parseCurrencies(getApplication()) }
+            when (val response = currencyRepository.getCurrencyRates()) {
 
-            // 'await()' suspende la corrutina hasta que 'async' haya terminado
-            currencies.value = currencyList.await()
+                is ApiResult.Success -> {
 
-            // Buscamos en la lista de monedas la que tenga el código ISO igual a 'EURO_ISO_CODE'
-            // y la asignamos a '_selectedCurrency1'. Si no se encuentra ninguna,
-            // se asigna la primera moneda de la lista o null si la lista está vacía.
-            _selectedCurrency1.value = currencies.value.find { it.isoCode == EURO_ISO_CODE }
-                ?: currencies.value.firstOrNull()
+                    //TODO: Función para readaptar
 
-            // Hacemos lo mismo con '_selectedCurrency2', buscando el código ISO 'AMERICAN_DOLLAR_ISO_CODE'.
-            _selectedCurrency2.value =
-                currencies.value.find { it.isoCode == AMERICAN_DOLLAR_ISO_CODE }
-                    ?: currencies.value.firstOrNull()
+                    val currencyListFromApi = convertToCurrencies(response.data)
+
+                    Log.d("MONEDAS", currencyListFromApi.size.toString()) //TODO: Readaptar
+
+                    // Utilizamos 'async' para realizar la operación en segundo plano
+                    val currencyList = async { parseCurrencies(getApplication()) }
+
+                    // 'await()' suspende la corrutina hasta que 'async' haya terminado
+                    currencies.value = currencyList.await()
+
+                    // Buscamos en la lista de monedas la que tenga el código ISO igual a 'EURO_ISO_CODE'
+                    // y la asignamos a '_selectedCurrency1'. Si no se encuentra ninguna,
+                    // se asigna la primera moneda de la lista o null si la lista está vacía.
+                    _selectedCurrency1.value = currencies.value.find { it.isoCode == EURO_ISO_CODE }
+                        ?: currencies.value.firstOrNull()
+
+                    // Hacemos lo mismo con '_selectedCurrency2', buscando el código ISO 'AMERICAN_DOLLAR_ISO_CODE'.
+                    _selectedCurrency2.value =
+                        currencies.value.find { it.isoCode == AMERICAN_DOLLAR_ISO_CODE }
+                            ?: currencies.value.firstOrNull()
+
+                }
+
+                is ApiResult.Error -> {
+                    // TODO: Pop-up de error
+                    Log.d("API_ERROR", "ERROR EN LA LLAMADA API")
+                }
+
+            }
         }
     }
 
@@ -140,5 +164,20 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             return Pair(conversionResult, _selectedCurrency2.value?.currencySymbol ?: "")
         }
         return null
+    }
+
+    private fun convertToCurrencies(response: CurrencyRateResponse): List<Currency> {
+        // Convierte la respuesta de la API a una lista de objetos Currency
+        // Para completar posteriormente
+
+        return response.rates.map { (isoCode, exchangeRate) ->
+            Currency(
+                isoCode = isoCode,
+                countryName = "", // Estos datos no están disponibles en la respuesta de la API
+                currencyName = "", // Estos datos no están disponibles en la respuesta de la API
+                currencySymbol = "", // Estos datos no están disponibles en la respuesta de la API
+                exchangeRate = exchangeRate
+            )
+        }
     }
 }

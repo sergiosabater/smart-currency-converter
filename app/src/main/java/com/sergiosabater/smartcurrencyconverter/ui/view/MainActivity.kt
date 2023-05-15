@@ -1,5 +1,6 @@
 package com.sergiosabater.smartcurrencyconverter.ui.view
 
+import android.app.Application
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -10,30 +11,39 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.sergiosabater.smartcurrencyconverter.data.network.RetrofitClient
+import com.sergiosabater.smartcurrencyconverter.repository.CurrencyRepository
+import com.sergiosabater.smartcurrencyconverter.repository.CurrencyRepositoryImpl
 import com.sergiosabater.smartcurrencyconverter.ui.components.CurrencySelector
 import com.sergiosabater.smartcurrencyconverter.ui.components.Display
 import com.sergiosabater.smartcurrencyconverter.ui.components.Keyboard
 import com.sergiosabater.smartcurrencyconverter.ui.components.config.KeyboardConfig
 import com.sergiosabater.smartcurrencyconverter.ui.theme.SmartCurrencyConverterTheme
 import com.sergiosabater.smartcurrencyconverter.viewmodel.MainViewModel
+import com.sergiosabater.smartcurrencyconverter.viewmodel.MainViewModelFactory
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val apiInterface = RetrofitClient.instance
+        val currencyRepository = CurrencyRepositoryImpl(apiInterface)
         setContent {
             SmartCurrencyConverterTheme {
-                MainScreen()
+                MainScreen(currencyRepository)
             }
         }
     }
 }
 
 @Composable
-fun MainScreen() {
-    val mainViewModel: MainViewModel = viewModel()
+fun MainScreen(currencyRepository: CurrencyRepository) {
+    val mainViewModel: MainViewModel = viewModel(
+        factory = MainViewModelFactory(LocalContext.current.applicationContext as Application, currencyRepository)
+    )
 
     // Recolectamos los StateFlow del ViewModel como un State en Compose
     val displayText by mainViewModel.displayText.collectAsState()
