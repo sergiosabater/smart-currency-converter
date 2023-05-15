@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -21,6 +20,7 @@ import com.sergiosabater.smartcurrencyconverter.repository.CurrencyRepositoryImp
 import com.sergiosabater.smartcurrencyconverter.ui.components.CurrencySelector
 import com.sergiosabater.smartcurrencyconverter.ui.components.Display
 import com.sergiosabater.smartcurrencyconverter.ui.components.Keyboard
+import com.sergiosabater.smartcurrencyconverter.ui.components.SplashScreen
 import com.sergiosabater.smartcurrencyconverter.ui.components.config.KeyboardConfig
 import com.sergiosabater.smartcurrencyconverter.ui.theme.SmartCurrencyConverterTheme
 import com.sergiosabater.smartcurrencyconverter.viewmodel.MainViewModel
@@ -61,11 +61,13 @@ fun MainScreen(currencyRepository: CurrencyRepository) {
     val mCurrencySelector = CurrencySelector()
     val mKeyboard = Keyboard()
     val keyboardConfig = KeyboardConfig()
+    val splashScreen = SplashScreen()
 
     // Comprueba que las monedas se hayan cargado antes de intentar mostrarlas
     if (currencies.isEmpty()) {
-        // Muestra un spinner de carga o un mensaje de error
-        CircularProgressIndicator()
+        // Mostrará el SplashScreen mientras se cargan las monedas.
+        // Cuando las monedas estén cargadas, la pantalla cambiará al contenido principal.
+        splashScreen.Splash()
     } else {
         Column {
             // Primer display
