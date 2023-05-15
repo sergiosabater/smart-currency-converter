@@ -42,7 +42,10 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainScreen(currencyRepository: CurrencyRepository) {
     val mainViewModel: MainViewModel = viewModel(
-        factory = MainViewModelFactory(LocalContext.current.applicationContext as Application, currencyRepository)
+        factory = MainViewModelFactory(
+            LocalContext.current.applicationContext as Application,
+            currencyRepository
+        )
     )
 
     // Recolectamos los StateFlow del ViewModel como un State en Compose

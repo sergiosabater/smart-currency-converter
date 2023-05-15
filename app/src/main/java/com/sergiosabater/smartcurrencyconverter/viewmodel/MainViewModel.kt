@@ -6,7 +6,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.sergiosabater.smartcurrencyconverter.data.network.ApiResult
 import com.sergiosabater.smartcurrencyconverter.domain.model.Currency
-import com.sergiosabater.smartcurrencyconverter.domain.model.CurrencyRateResponse
 import com.sergiosabater.smartcurrencyconverter.domain.usecase.common.HandleConversionUseCase
 import com.sergiosabater.smartcurrencyconverter.domain.usecase.currencySelector.HandleCurrencySelectionUseCase
 import com.sergiosabater.smartcurrencyconverter.domain.usecase.display.HandleClearDisplayUseCase
@@ -18,8 +17,7 @@ import com.sergiosabater.smartcurrencyconverter.util.constant.SymbolConstants.AM
 import com.sergiosabater.smartcurrencyconverter.util.constant.SymbolConstants.EURO
 import com.sergiosabater.smartcurrencyconverter.util.constant.TextConstants.AMERICAN_DOLLAR_ISO_CODE
 import com.sergiosabater.smartcurrencyconverter.util.constant.TextConstants.EURO_ISO_CODE
-import com.sergiosabater.smartcurrencyconverter.util.parser.parseCurrencies
-import kotlinx.coroutines.async
+import com.sergiosabater.smartcurrencyconverter.util.parser.loadCurrenciesFromApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -88,25 +86,18 @@ class MainViewModel(application: Application, private val currencyRepository: Cu
     // Este método carga las monedas de manera asíncrona (mediante corrutina)
     // las monedas con los códigos ISO "EUR" y "USD" se seleccionan como
     // las monedas iniciales en el CurrencySelector
-    private fun loadCurrencies() {
+    fun loadCurrencies() {
         // La función launch inicia una nueva corrutina en 'viewModelScope'.
         // Este scope está ligado al ciclo de vida del ViewModel.
         viewModelScope.launch {
             when (val response = currencyRepository.getCurrencyRates()) {
-
                 is ApiResult.Success -> {
 
-                    //TODO: Función para readaptar
+                    val currenciesList = loadCurrenciesFromApi(getApplication(), response.data)
 
-                    val currencyListFromApi = convertToCurrencies(response.data)
+                    Log.d("API_OK", currenciesList.size.toString())
 
-                    Log.d("MONEDAS", currencyListFromApi.size.toString()) //TODO: Readaptar
-
-                    // Utilizamos 'async' para realizar la operación en segundo plano
-                    val currencyList = async { parseCurrencies(getApplication()) }
-
-                    // 'await()' suspende la corrutina hasta que 'async' haya terminado
-                    currencies.value = currencyList.await()
+                    currencies.value = currenciesList
 
                     // Buscamos en la lista de monedas la que tenga el código ISO igual a 'EURO_ISO_CODE'
                     // y la asignamos a '_selectedCurrency1'. Si no se encuentra ninguna,
@@ -118,14 +109,12 @@ class MainViewModel(application: Application, private val currencyRepository: Cu
                     _selectedCurrency2.value =
                         currencies.value.find { it.isoCode == AMERICAN_DOLLAR_ISO_CODE }
                             ?: currencies.value.firstOrNull()
-
                 }
 
                 is ApiResult.Error -> {
                     // TODO: Pop-up de error
                     Log.d("API_ERROR", "ERROR EN LA LLAMADA API")
                 }
-
             }
         }
     }
@@ -164,20 +153,5 @@ class MainViewModel(application: Application, private val currencyRepository: Cu
             return Pair(conversionResult, _selectedCurrency2.value?.currencySymbol ?: "")
         }
         return null
-    }
-
-    private fun convertToCurrencies(response: CurrencyRateResponse): List<Currency> {
-        // Convierte la respuesta de la API a una lista de objetos Currency
-        // Para completar posteriormente
-
-        return response.rates.map { (isoCode, exchangeRate) ->
-            Currency(
-                isoCode = isoCode,
-                countryName = "", // Estos datos no están disponibles en la respuesta de la API
-                currencyName = "", // Estos datos no están disponibles en la respuesta de la API
-                currencySymbol = "", // Estos datos no están disponibles en la respuesta de la API
-                exchangeRate = exchangeRate
-            )
-        }
     }
 }

@@ -5,5 +5,5 @@ data class Currency(
     val countryName: String,
     val currencyName: String,
     val currencySymbol: String,
-    val exchangeRate: Double
+    var exchangeRate: Double
 )
