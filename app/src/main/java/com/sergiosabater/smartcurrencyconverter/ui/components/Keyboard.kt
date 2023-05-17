@@ -38,7 +38,8 @@ class Keyboard {
         onClearButtonClick: () -> Unit,
         onNumericButtonClicked: (String) -> Unit,
         onBackspaceClicked: () -> Unit,
-        onSettingsButtonClicked: () -> Unit
+        onSettingsButtonClicked: () -> Unit,
+        onKeyClicked: (String) -> Unit
     ) {
         // BoxWithConstraints to get the available screen dimensions
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
@@ -60,6 +61,7 @@ class Keyboard {
                             Surface(color = Color.Gray) {
                                 TextButton(
                                     onClick = {
+                                        onKeyClicked(config.buttonSymbols[i][j])
                                         when {
                                             config.buttonSymbols[i][j] == CLEAR_BUTTON_STRING -> {
                                                 onClearButtonClick()
@@ -76,10 +78,6 @@ class Keyboard {
                                             config.buttonSymbols[i][j].first()
                                                 .isDigit() || config.buttonSymbols[i][j] == COMMA_STRING -> {
                                                 onNumericButtonClicked(config.buttonSymbols[i][j])
-                                            }
-
-                                            else -> {
-                                                // TODO: Implement this part of the code later
                                             }
                                         }
                                     },

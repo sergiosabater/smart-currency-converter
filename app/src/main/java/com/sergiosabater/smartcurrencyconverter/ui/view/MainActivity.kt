@@ -109,7 +109,8 @@ fun MainScreen(currencyRepository: CurrencyRepository, navController: NavControl
                 onClearButtonClick = mainViewModel::onClearButtonClicked,
                 onNumericButtonClicked = mainViewModel::onNumericButtonClicked,
                 onBackspaceClicked = mainViewModel::onBackspaceClicked,
-                onSettingsButtonClicked = mainViewModel::onSettingsButtonClicked
+                onSettingsButtonClicked = mainViewModel::onSettingsButtonClicked,
+                onKeyClicked = mainViewModel::onKeyClicked
             )
         }
     }
