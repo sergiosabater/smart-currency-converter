@@ -1,5 +1,6 @@
 package com.sergiosabater.smartcurrencyconverter.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -25,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import com.sergiosabater.smartcurrencyconverter.ui.components.config.KeyboardConfig
 import com.sergiosabater.smartcurrencyconverter.util.constant.SymbolConstants.BACKSPACE_SYMBOL_STRING
 import com.sergiosabater.smartcurrencyconverter.util.constant.SymbolConstants.CONVERSION_SYMBOL_STRING
+import com.sergiosabater.smartcurrencyconverter.util.constant.SymbolConstants.SETTINGS_SYMBOL_STRING
 import com.sergiosabater.smartcurrencyconverter.util.constant.TextConstants.CLEAR_BUTTON_STRING
 import com.sergiosabater.smartcurrencyconverter.util.constant.TextConstants.COMMA_STRING
 
@@ -35,7 +37,8 @@ class Keyboard {
         config: KeyboardConfig,
         onClearButtonClick: () -> Unit,
         onNumericButtonClicked: (String) -> Unit,
-        onBackspaceClicked: () -> Unit
+        onBackspaceClicked: () -> Unit,
+        onSettingsButtonClicked: () -> Unit
     ) {
         // BoxWithConstraints to get the available screen dimensions
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
@@ -66,8 +69,8 @@ class Keyboard {
                                                 onBackspaceClicked()
                                             }
 
-                                            config.buttonSymbols[i][j] == CONVERSION_SYMBOL_STRING -> {
-                                                // TODO: Implement this part of the code later
+                                            config.buttonSymbols[i][j] == SETTINGS_SYMBOL_STRING -> {
+                                                onSettingsButtonClicked()
                                             }
 
                                             config.buttonSymbols[i][j].first()

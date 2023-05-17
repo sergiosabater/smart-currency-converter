@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.sergiosabater.smartcurrencyconverter.data.network.ApiResult
 import com.sergiosabater.smartcurrencyconverter.domain.model.Currency
 import com.sergiosabater.smartcurrencyconverter.domain.usecase.common.HandleConversionUseCase
+import com.sergiosabater.smartcurrencyconverter.domain.usecase.common.NavigateToSettingsUseCase
 import com.sergiosabater.smartcurrencyconverter.domain.usecase.currencySelector.HandleCurrencySelectionUseCase
 import com.sergiosabater.smartcurrencyconverter.domain.usecase.display.HandleClearDisplayUseCase
 import com.sergiosabater.smartcurrencyconverter.domain.usecase.keyboard.HandleBackspaceUseCase
@@ -23,7 +24,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class MainViewModel(application: Application, private val currencyRepository: CurrencyRepository) :
+class MainViewModel(
+    application: Application,
+    private val currencyRepository: CurrencyRepository,
+    private val navigateToSettingsUseCase: NavigateToSettingsUseCase
+) :
     AndroidViewModel(application) {
     // Los casos de uso que manejan la lógica de negocio y son instanciados en el ViewModel
     private val handleClearDisplayUseCase = HandleClearDisplayUseCase()
@@ -86,37 +91,61 @@ class MainViewModel(application: Application, private val currencyRepository: Cu
     // Este método carga las monedas de manera asíncrona (mediante corrutina)
     // las monedas con los códigos ISO "EUR" y "USD" se seleccionan como
     // las monedas iniciales en el CurrencySelector
-    fun loadCurrencies() {
-        // La función launch inicia una nueva corrutina en 'viewModelScope'.
-        // Este scope está ligado al ciclo de vida del ViewModel.
-        viewModelScope.launch {
-            when (val response = currencyRepository.getCurrencyRates()) {
-                is ApiResult.Success -> {
+    private fun loadCurrencies() {
 
-                    val currenciesList = loadCurrenciesFromApi(getApplication(), response.data)
+        val debugMode = true
 
-                    Log.d("API_OK", currenciesList.size.toString())
+        if (debugMode) {
 
-                    currencies.value = currenciesList
+            Log.d("API", "DebugMode")
 
-                    // Buscamos en la lista de monedas la que tenga el código ISO igual a 'EURO_ISO_CODE'
-                    // y la asignamos a '_selectedCurrency1'. Si no se encuentra ninguna,
-                    // se asigna la primera moneda de la lista o null si la lista está vacía.
-                    _selectedCurrency1.value = currencies.value.find { it.isoCode == EURO_ISO_CODE }
-                        ?: currencies.value.firstOrNull()
+            currencies.value = createCurrencyList()
 
-                    // Hacemos lo mismo con '_selectedCurrency2', buscando el código ISO 'AMERICAN_DOLLAR_ISO_CODE'.
-                    _selectedCurrency2.value =
-                        currencies.value.find { it.isoCode == AMERICAN_DOLLAR_ISO_CODE }
+            // Buscamos en la lista de monedas la que tenga el código ISO igual a 'EURO_ISO_CODE'
+            // y la asignamos a '_selectedCurrency1'. Si no se encuentra ninguna,
+            // se asigna la primera moneda de la lista o null si la lista está vacía.
+            _selectedCurrency1.value = currencies.value.find { it.isoCode == EURO_ISO_CODE }
+                ?: currencies.value.firstOrNull()
+
+            // Hacemos lo mismo con '_selectedCurrency2', buscando el código ISO 'AMERICAN_DOLLAR_ISO_CODE'.
+            _selectedCurrency2.value =
+                currencies.value.find { it.isoCode == AMERICAN_DOLLAR_ISO_CODE }
+                    ?: currencies.value.firstOrNull()
+
+
+        } else {
+            // La función launch inicia una nueva corrutina en 'viewModelScope'.
+            // Este scope está ligado al ciclo de vida del ViewModel.
+            viewModelScope.launch {
+                when (val response = currencyRepository.getCurrencyRates()) {
+                    is ApiResult.Success -> {
+
+                        val currenciesList = loadCurrenciesFromApi(getApplication(), response.data)
+
+                        Log.d("API_OK", currenciesList.size.toString())
+
+                        currencies.value = currenciesList
+
+                        // Buscamos en la lista de monedas la que tenga el código ISO igual a 'EURO_ISO_CODE'
+                        // y la asignamos a '_selectedCurrency1'. Si no se encuentra ninguna,
+                        // se asigna la primera moneda de la lista o null si la lista está vacía.
+                        _selectedCurrency1.value = currencies.value.find { it.isoCode == EURO_ISO_CODE }
                             ?: currencies.value.firstOrNull()
-                }
 
-                is ApiResult.Error -> {
-                    // TODO: Pop-up de error
-                    Log.d("API_ERROR", "ERROR EN LA LLAMADA API")
+                        // Hacemos lo mismo con '_selectedCurrency2', buscando el código ISO 'AMERICAN_DOLLAR_ISO_CODE'.
+                        _selectedCurrency2.value =
+                            currencies.value.find { it.isoCode == AMERICAN_DOLLAR_ISO_CODE }
+                                ?: currencies.value.firstOrNull()
+                    }
+
+                    is ApiResult.Error -> {
+                        // TODO: Pop-up de error
+                        Log.d("API_ERROR", "ERROR EN LA LLAMADA API")
+                    }
                 }
             }
         }
+
     }
 
     // Este método se utiliza para iniciar la conversión después de un pequeño retardo.
@@ -153,5 +182,55 @@ class MainViewModel(application: Application, private val currencyRepository: Cu
             return Pair(conversionResult, _selectedCurrency2.value?.currencySymbol ?: "")
         }
         return null
+    }
+
+
+    fun onSettingsButtonClicked() {
+        navigateToSettingsUseCase.execute()
+    }
+
+    private fun createCurrencyList(): List<Currency> {
+        val currency1 = Currency(
+            isoCode = "USD",
+            countryName = "United States",
+            currencyName = "Dollar",
+            currencySymbol = "$",
+            exchangeRate = 1.0
+        )
+
+        val currency2 = Currency(
+            isoCode = "EUR",
+            countryName = "European Union",
+            currencyName = "Euro",
+            currencySymbol = "€",
+            exchangeRate = 0.85
+        )
+
+        val currency3 = Currency(
+            isoCode = "GBP",
+            countryName = "United Kingdom",
+            currencyName = "Pound",
+            currencySymbol = "£",
+            exchangeRate = 0.75
+        )
+
+        val currency4 = Currency(
+            isoCode = "JPY",
+            countryName = "Japan",
+            currencyName = "Yen",
+            currencySymbol = "¥",
+            exchangeRate = 110.25
+        )
+
+        val currency5 = Currency(
+            isoCode = "AUD",
+            countryName = "Australia",
+            currencyName = "Australian Dollar",
+            currencySymbol = "A$",
+            exchangeRate = 1.35
+        )
+
+        return listOf(currency1, currency2, currency3, currency4, currency5)
+
     }
 }

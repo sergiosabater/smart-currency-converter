@@ -14,7 +14,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+
+import androidx.navigation.compose.rememberNavController
+
 import com.sergiosabater.smartcurrencyconverter.data.network.RetrofitClient
+import com.sergiosabater.smartcurrencyconverter.domain.usecase.common.NavigateToSettingsUseCase
 import com.sergiosabater.smartcurrencyconverter.repository.CurrencyRepository
 import com.sergiosabater.smartcurrencyconverter.repository.CurrencyRepositoryImpl
 import com.sergiosabater.smartcurrencyconverter.ui.components.CurrencySelector
@@ -33,18 +40,24 @@ class MainActivity : ComponentActivity() {
         val currencyRepository = CurrencyRepositoryImpl(apiInterface)
         setContent {
             SmartCurrencyConverterTheme {
-                MainScreen(currencyRepository)
+                val navController = rememberNavController()
+                NavHost(navController, startDestination = "main") {
+                    composable("main") { MainScreen(currencyRepository, navController) }
+                    composable("settings") { SettingsScreen(navController) }
+                }
             }
         }
     }
 }
 
 @Composable
-fun MainScreen(currencyRepository: CurrencyRepository) {
+fun MainScreen(currencyRepository: CurrencyRepository, navController: NavController) {
+    val navigateToSettingsUseCase = NavigateToSettingsUseCase(navController)
     val mainViewModel: MainViewModel = viewModel(
         factory = MainViewModelFactory(
             LocalContext.current.applicationContext as Application,
-            currencyRepository
+            currencyRepository,
+            navigateToSettingsUseCase
         )
     )
 
@@ -95,7 +108,8 @@ fun MainScreen(currencyRepository: CurrencyRepository) {
                 config = keyboardConfig,
                 onClearButtonClick = mainViewModel::onClearButtonClicked,
                 onNumericButtonClicked = mainViewModel::onNumericButtonClicked,
-                onBackspaceClicked = mainViewModel::onBackspaceClicked
+                onBackspaceClicked = mainViewModel::onBackspaceClicked,
+                onSettingsButtonClicked = mainViewModel::onSettingsButtonClicked
             )
         }
     }
