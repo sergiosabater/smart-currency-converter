@@ -32,6 +32,7 @@ import com.sergiosabater.smartcurrencyconverter.ui.components.config.KeyboardCon
 import com.sergiosabater.smartcurrencyconverter.ui.theme.SmartCurrencyConverterTheme
 import com.sergiosabater.smartcurrencyconverter.viewmodel.MainViewModel
 import com.sergiosabater.smartcurrencyconverter.viewmodel.MainViewModelFactory
+import com.sergiosabater.smartcurrencyconverter.viewmodel.SettingsViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,9 +42,16 @@ class MainActivity : ComponentActivity() {
         setContent {
             SmartCurrencyConverterTheme {
                 val navController = rememberNavController()
+                val settingsViewModel: SettingsViewModel = viewModel()
+
                 NavHost(navController, startDestination = "main") {
                     composable("main") { MainScreen(currencyRepository, navController) }
-                    composable("settings") { SettingsScreen(navController) }
+                    composable("settings") {
+                        SettingsScreen(
+                            settingsViewModel = settingsViewModel,
+                            navController = navController
+                        )
+                    }
                 }
             }
         }

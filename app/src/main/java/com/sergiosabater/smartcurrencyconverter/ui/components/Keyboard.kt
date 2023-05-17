@@ -1,6 +1,5 @@
 package com.sergiosabater.smartcurrencyconverter.ui.components
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -25,7 +24,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sergiosabater.smartcurrencyconverter.ui.components.config.KeyboardConfig
 import com.sergiosabater.smartcurrencyconverter.util.constant.SymbolConstants.BACKSPACE_SYMBOL_STRING
-import com.sergiosabater.smartcurrencyconverter.util.constant.SymbolConstants.CONVERSION_SYMBOL_STRING
 import com.sergiosabater.smartcurrencyconverter.util.constant.SymbolConstants.SETTINGS_SYMBOL_STRING
 import com.sergiosabater.smartcurrencyconverter.util.constant.TextConstants.CLEAR_BUTTON_STRING
 import com.sergiosabater.smartcurrencyconverter.util.constant.TextConstants.COMMA_STRING

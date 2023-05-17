@@ -39,6 +39,11 @@ class MainViewModel(
     private val handleConversionUseCase = HandleConversionUseCase()
     private val playSoundUseCase = PlaySoundUseCase(application)
 
+    private val settingsViewModel: SettingsViewModel = SettingsViewModel(application)
+
+    private var isSoundEnabled = false
+
+
     // Los StateFlows para manejar el estado de las vistas
     val currencies = MutableStateFlow<List<Currency>>(emptyList())
 
@@ -62,6 +67,13 @@ class MainViewModel(
 
     init {
         loadCurrencies()
+
+        viewModelScope.launch {
+            settingsViewModel.userPreferencesFlow.collect { value ->
+                isSoundEnabled = value.soundEnabled
+            }
+        }
+
     }
 
     // Los métodos siguientes son los eventos que se disparan desde las vistas
@@ -127,8 +139,9 @@ class MainViewModel(
                         // Buscamos en la lista de monedas la que tenga el código ISO igual a 'EURO_ISO_CODE'
                         // y la asignamos a '_selectedCurrency1'. Si no se encuentra ninguna,
                         // se asigna la primera moneda de la lista o null si la lista está vacía.
-                        _selectedCurrency1.value = currencies.value.find { it.isoCode == EURO_ISO_CODE }
-                            ?: currencies.value.firstOrNull()
+                        _selectedCurrency1.value =
+                            currencies.value.find { it.isoCode == EURO_ISO_CODE }
+                                ?: currencies.value.firstOrNull()
 
                         // Hacemos lo mismo con '_selectedCurrency2', buscando el código ISO 'AMERICAN_DOLLAR_ISO_CODE'.
                         _selectedCurrency2.value =
@@ -187,7 +200,7 @@ class MainViewModel(
     }
 
     fun onKeyClicked(keyText: String) {
-        playSoundUseCase.play(keyText)
+        playSoundUseCase.play(keyText, isSoundEnabled)
     }
 
     private fun createCurrencyList(): List<Currency> {
