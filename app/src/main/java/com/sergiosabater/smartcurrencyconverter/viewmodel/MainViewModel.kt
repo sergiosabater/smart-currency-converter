@@ -154,8 +154,8 @@ class MainViewModel(
                     }
 
                     is ApiResult.Error -> {
-                        // TODO: Pop-up de error
-                        currencies.value = CurrencyResult.Failure(Exception("ERROR EN LA LLAMADA API"))
+
+                        currencies.value = CurrencyResult.Failure(Exception(response.exception))
                     }
                 }
             }

@@ -21,10 +21,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 
 import com.sergiosabater.smartcurrencyconverter.data.network.RetrofitClient
+import com.sergiosabater.smartcurrencyconverter.database.AppDatabase
 import com.sergiosabater.smartcurrencyconverter.domain.model.CurrencyResult
 import com.sergiosabater.smartcurrencyconverter.domain.usecase.common.NavigateToSettingsUseCase
 import com.sergiosabater.smartcurrencyconverter.repository.CurrencyRepository
 import com.sergiosabater.smartcurrencyconverter.repository.CurrencyRepositoryImpl
+import com.sergiosabater.smartcurrencyconverter.repository.datasource.LocalDataSource
 import com.sergiosabater.smartcurrencyconverter.ui.components.CurrencySelector
 import com.sergiosabater.smartcurrencyconverter.ui.components.Display
 import com.sergiosabater.smartcurrencyconverter.ui.components.Keyboard
@@ -39,7 +41,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val apiInterface = RetrofitClient.instance
-        val currencyRepository = CurrencyRepositoryImpl(apiInterface)
+        val database = AppDatabase.getDatabase(this)
+        val currencyRateDao = database.currencyRateDao()
+        val localDataSource = LocalDataSource(currencyRateDao)
+        val currencyRepository = CurrencyRepositoryImpl(apiInterface, localDataSource)
         setContent {
             SmartCurrencyConverterTheme {
                 val navController = rememberNavController()
@@ -85,7 +90,7 @@ fun MainScreen(currencyRepository: CurrencyRepository, navController: NavControl
     val keyboardConfig = KeyboardConfig()
     val splashScreen = SplashScreen()
 
-    
+
     when (currencies) {
 
         is CurrencyResult.Loading -> {
