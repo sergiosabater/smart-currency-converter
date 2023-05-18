@@ -21,6 +21,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 
 import com.sergiosabater.smartcurrencyconverter.data.network.RetrofitClient
+import com.sergiosabater.smartcurrencyconverter.domain.model.CurrencyResult
 import com.sergiosabater.smartcurrencyconverter.domain.usecase.common.NavigateToSettingsUseCase
 import com.sergiosabater.smartcurrencyconverter.repository.CurrencyRepository
 import com.sergiosabater.smartcurrencyconverter.repository.CurrencyRepositoryImpl
@@ -84,42 +85,52 @@ fun MainScreen(currencyRepository: CurrencyRepository, navController: NavControl
     val keyboardConfig = KeyboardConfig()
     val splashScreen = SplashScreen()
 
-    // Comprueba que las monedas se hayan cargado antes de intentar mostrarlas
-    if (currencies.isEmpty()) {
-        // Mostrará el SplashScreen mientras se cargan las monedas.
-        // Cuando las monedas estén cargadas, la pantalla cambiará al contenido principal.
-        splashScreen.Splash()
-    } else {
-        Column {
-            // Primer display
-            mDisplay.CustomDisplay(displayText = displayText, symbol = displaySymbol)
+    
+    when (currencies) {
 
-            // Divider crea una línea horizontal entre los dos displays
-            Divider(color = Color.Gray, thickness = 2.dp)
+        is CurrencyResult.Loading -> {
+            splashScreen.Splash()
+        }
 
-            // Segundo display
-            mDisplay.CustomDisplay(
-                displayText = conversionResult,
-                symbol = conversionSymbol
-            )
+        is CurrencyResult.Success -> {
+            val currencies = (currencies as CurrencyResult.Success).data
+            Column {
+                // Primer display
+                mDisplay.CustomDisplay(displayText = displayText, symbol = displaySymbol)
 
-            // Selector de monedas
-            mCurrencySelector.CustomCurrencySelector(
-                currencies,
-                mainViewModel::onCurrencySelected,
-                defaultCurrency1 ?: currencies[0],
-                defaultCurrency2 ?: currencies[0]
-            )
+                // Divider crea una línea horizontal entre los dos displays
+                Divider(color = Color.Gray, thickness = 2.dp)
 
-            //Teclado
-            mKeyboard.CustomKeyboard(
-                config = keyboardConfig,
-                onClearButtonClick = mainViewModel::onClearButtonClicked,
-                onNumericButtonClicked = mainViewModel::onNumericButtonClicked,
-                onBackspaceClicked = mainViewModel::onBackspaceClicked,
-                onSettingsButtonClicked = mainViewModel::onSettingsButtonClicked,
-                onKeyClicked = mainViewModel::onKeyClicked
-            )
+                // Segundo display
+                mDisplay.CustomDisplay(
+                    displayText = conversionResult,
+                    symbol = conversionSymbol
+                )
+
+                // Selector de monedas
+                mCurrencySelector.CustomCurrencySelector(
+                    currencies,
+                    mainViewModel::onCurrencySelected,
+                    defaultCurrency1 ?: currencies[0],
+                    defaultCurrency2 ?: currencies[0]
+                )
+
+                //Teclado
+                mKeyboard.CustomKeyboard(
+                    config = keyboardConfig,
+                    onClearButtonClick = mainViewModel::onClearButtonClicked,
+                    onNumericButtonClicked = mainViewModel::onNumericButtonClicked,
+                    onBackspaceClicked = mainViewModel::onBackspaceClicked,
+                    onSettingsButtonClicked = mainViewModel::onSettingsButtonClicked,
+                    onKeyClicked = mainViewModel::onKeyClicked
+                )
+            }
+        }
+
+        is CurrencyResult.Failure -> {
+            // Muestra un Composable para indicar un error
+
         }
     }
 }
+

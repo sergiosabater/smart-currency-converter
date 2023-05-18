@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.sergiosabater.smartcurrencyconverter.data.network.ApiResult
 import com.sergiosabater.smartcurrencyconverter.domain.model.Currency
+import com.sergiosabater.smartcurrencyconverter.domain.model.CurrencyResult
 import com.sergiosabater.smartcurrencyconverter.domain.usecase.common.HandleConversionUseCase
 import com.sergiosabater.smartcurrencyconverter.domain.usecase.common.NavigateToSettingsUseCase
 import com.sergiosabater.smartcurrencyconverter.domain.usecase.currencySelector.HandleCurrencySelectionUseCase
@@ -45,7 +46,7 @@ class MainViewModel(
 
 
     // Los StateFlows para manejar el estado de las vistas
-    val currencies = MutableStateFlow<List<Currency>>(emptyList())
+    val currencies = MutableStateFlow<CurrencyResult>(CurrencyResult.Loading)
 
     private val _displayText = MutableStateFlow(INITIAL_VALUE_STRING)
     val displayText: StateFlow<String> = _displayText
@@ -107,25 +108,29 @@ class MainViewModel(
     // las monedas iniciales en el CurrencySelector
     private fun loadCurrencies() {
 
-        val debugMode = true
+        val debugMode = false
 
         if (debugMode) {
 
             Log.d("API", "DebugMode")
 
-            currencies.value = createCurrencyList()
+            currencies.value = CurrencyResult.Success(createCurrencyList())
 
-            _selectedCurrency1.value = currencies.value.find { it.isoCode == EURO_ISO_CODE }
-                ?: currencies.value.firstOrNull()
+            _selectedCurrency1.value =
+                (currencies.value as? CurrencyResult.Success)?.data?.find { it.isoCode == EURO_ISO_CODE }
+                    ?: (currencies.value as? CurrencyResult.Success)?.data?.firstOrNull()
 
             _selectedCurrency2.value =
-                currencies.value.find { it.isoCode == AMERICAN_DOLLAR_ISO_CODE }
-                    ?: currencies.value.firstOrNull()
+                (currencies.value as? CurrencyResult.Success)?.data?.find { it.isoCode == AMERICAN_DOLLAR_ISO_CODE }
+                    ?: (currencies.value as? CurrencyResult.Success)?.data?.firstOrNull()
 
 
         } else {
             // La función launch inicia una nueva corrutina en 'viewModelScope'.
             // Este scope está ligado al ciclo de vida del ViewModel.
+
+            currencies.value = CurrencyResult.Loading
+
             viewModelScope.launch {
                 when (val response = currencyRepository.getCurrencyRates()) {
                     is ApiResult.Success -> {
@@ -134,24 +139,23 @@ class MainViewModel(
 
                         Log.d("API_OK", currenciesList.size.toString())
 
-                        currencies.value = currenciesList
+                        currencies.value = CurrencyResult.Success(currenciesList)
 
                         // Buscamos en la lista de monedas la que tenga el código ISO igual a 'EURO_ISO_CODE'
                         // y la asignamos a '_selectedCurrency1'. Si no se encuentra ninguna,
                         // se asigna la primera moneda de la lista o null si la lista está vacía.
                         _selectedCurrency1.value =
-                            currencies.value.find { it.isoCode == EURO_ISO_CODE }
-                                ?: currencies.value.firstOrNull()
+                            (currencies.value as? CurrencyResult.Success)?.data?.find { it.isoCode == EURO_ISO_CODE }
+                                ?: (currencies.value as? CurrencyResult.Success)?.data?.firstOrNull()
 
-                        // Hacemos lo mismo con '_selectedCurrency2', buscando el código ISO 'AMERICAN_DOLLAR_ISO_CODE'.
                         _selectedCurrency2.value =
-                            currencies.value.find { it.isoCode == AMERICAN_DOLLAR_ISO_CODE }
-                                ?: currencies.value.firstOrNull()
+                            (currencies.value as? CurrencyResult.Success)?.data?.find { it.isoCode == AMERICAN_DOLLAR_ISO_CODE }
+                                ?: (currencies.value as? CurrencyResult.Success)?.data?.firstOrNull()
                     }
 
                     is ApiResult.Error -> {
                         // TODO: Pop-up de error
-                        Log.d("API_ERROR", "ERROR EN LA LLAMADA API")
+                        currencies.value = CurrencyResult.Failure(Exception("ERROR EN LA LLAMADA API"))
                     }
                 }
             }
