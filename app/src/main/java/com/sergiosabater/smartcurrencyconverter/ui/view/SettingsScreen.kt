@@ -51,18 +51,20 @@ fun SettingsScreen(settingsViewModel: SettingsViewModel, navController: NavContr
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
-                Row(
+                Box(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    contentAlignment = Alignment.Center
                 ) {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(
+                        onClick = { navController.popBackStack() },
+                        modifier = Modifier.align(Alignment.CenterStart)
+                    ) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = "Navegar atrás")
                     }
                     Text(
                         text = "Ajustes",
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth(0.8f)
+                        modifier = Modifier.align(Alignment.Center)
                     )
                 }
                 SettingsContent(soundEnabled, settingsViewModel, LocalContext.current)
