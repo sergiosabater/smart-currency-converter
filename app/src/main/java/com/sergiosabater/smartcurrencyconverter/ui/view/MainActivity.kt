@@ -11,6 +11,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -27,6 +28,7 @@ import com.sergiosabater.smartcurrencyconverter.domain.usecase.common.NavigateTo
 import com.sergiosabater.smartcurrencyconverter.repository.CurrencyRepository
 import com.sergiosabater.smartcurrencyconverter.repository.CurrencyRepositoryImpl
 import com.sergiosabater.smartcurrencyconverter.repository.datasource.LocalDataSource
+import com.sergiosabater.smartcurrencyconverter.repository.datasource.RemoteDataSource
 import com.sergiosabater.smartcurrencyconverter.ui.components.CurrencySelector
 import com.sergiosabater.smartcurrencyconverter.ui.components.Display
 import com.sergiosabater.smartcurrencyconverter.ui.components.Keyboard
@@ -41,10 +43,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val apiInterface = RetrofitClient.instance
+        val remoteDataSource = RemoteDataSource(apiInterface)
         val database = AppDatabase.getDatabase(this)
         val currencyRateDao = database.currencyRateDao()
         val localDataSource = LocalDataSource(currencyRateDao)
-        val currencyRepository = CurrencyRepositoryImpl(apiInterface, localDataSource)
+        val currencyRepository = CurrencyRepositoryImpl(remoteDataSource, localDataSource)
         setContent {
             SmartCurrencyConverterTheme {
                 val navController = rememberNavController()
@@ -133,8 +136,7 @@ fun MainScreen(currencyRepository: CurrencyRepository, navController: NavControl
         }
 
         is CurrencyResult.Failure -> {
-            // Muestra un Composable para indicar un error
-
+            ErrorScreen()
         }
     }
 }
