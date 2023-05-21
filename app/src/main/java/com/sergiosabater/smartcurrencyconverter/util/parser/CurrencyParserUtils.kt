@@ -27,9 +27,6 @@ private fun readRawResource(context: Context, rawResourceId: Int): String {
 
 fun loadCurrenciesFromApi(context: Context, response: CurrencyRateResponse): List<Currency> {
 
-    // Escribe la respuesta (cadena JSON) en un archivo
-    writeCurrencyRatesToFile(context, response)
-
     val jsonString = readRawResource(context, R.raw.currency_dictionary)
     val jsonArray = JsonParser.parseString(jsonString).asJsonArray
 
@@ -66,30 +63,5 @@ fun loadCurrenciesFromApi(context: Context, response: CurrencyRateResponse): Lis
 
         // Si encontramos la moneda en el diccionario, actualizamos su tasa de cambio
         currency?.apply { this.exchangeRate = exchangeRate }
-    }
-}
-
-fun writeCurrencyRatesToFile(context: Context, response: CurrencyRateResponse) {
-    val fileName = "currency_rates.json"
-
-    // Convertir el objeto CurrencyRateResponse a JSON usando Gson
-    val gson = Gson()
-    val data = gson.toJson(response)
-
-    context.openFileOutput(fileName, Context.MODE_PRIVATE).use { output ->
-        output.write(data.toByteArray())
-    }
-}
-
-fun readCurrencyRatesFromFile(context: Context): CurrencyRateResponse {
-    val fileName = "currency_rates.json"
-    try {
-        val data = context.openFileInput(fileName).bufferedReader().use { it.readText() }
-        // Convertir la cadena JSON de vuelta a un objeto CurrencyRateResponse
-        val gson = Gson()
-        return gson.fromJson(data, CurrencyRateResponse::class.java)
-    } catch (e: IOException) {
-        // Lanzar la excepción si el archivo no existe o no se puede leer
-        throw IOException("No se pudo leer el archivo $fileName", e)
     }
 }

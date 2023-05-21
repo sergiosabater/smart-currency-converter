@@ -1,7 +1,6 @@
 package com.sergiosabater.smartcurrencyconverter.viewmodel
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.sergiosabater.smartcurrencyconverter.data.network.ApiResult
@@ -21,7 +20,6 @@ import com.sergiosabater.smartcurrencyconverter.util.constant.SymbolConstants.EU
 import com.sergiosabater.smartcurrencyconverter.util.constant.TextConstants.AMERICAN_DOLLAR_ISO_CODE
 import com.sergiosabater.smartcurrencyconverter.util.constant.TextConstants.EURO_ISO_CODE
 import com.sergiosabater.smartcurrencyconverter.util.parser.loadCurrenciesFromApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -46,7 +44,8 @@ class MainViewModel(
 
 
     // Los StateFlows para manejar el estado de las vistas
-    val currencies = MutableStateFlow<CurrencyResult>(CurrencyResult.Loading)
+    private val _currencies = MutableStateFlow<CurrencyResult>(CurrencyResult.Loading)
+    val currencies: StateFlow<CurrencyResult> = _currencies
 
     private val _displayText = MutableStateFlow(INITIAL_VALUE_STRING)
     val displayText: StateFlow<String> = _displayText
@@ -68,13 +67,15 @@ class MainViewModel(
 
     init {
         loadCurrencies()
+        initUserPreferences()
+    }
 
+    private fun initUserPreferences() {
         viewModelScope.launch {
             settingsViewModel.userPreferencesFlow.collect { value ->
                 isSoundEnabled = value.soundEnabled
             }
         }
-
     }
 
     // Los métodos siguientes son los eventos que se disparan desde las vistas
@@ -106,57 +107,33 @@ class MainViewModel(
     // Este método carga las monedas de manera asíncrona (mediante corrutina)
     // las monedas con los códigos ISO "EUR" y "USD" se seleccionan como
     // las monedas iniciales en el CurrencySelector
-    private fun loadCurrencies() {
+    internal fun loadCurrencies() {
 
-        val debugMode = false
+        // La función launch inicia una nueva corrutina en 'viewModelScope'.
+        // Este scope está ligado al ciclo de vida del ViewModel.
 
-        if (debugMode) {
+        _currencies.value = CurrencyResult.Loading
 
-            Log.d("API", "DebugMode")
+        viewModelScope.launch {
+            when (val response = currencyRepository.getCurrencyRates()) {
+                is ApiResult.Success -> {
+                    val currenciesList = loadCurrenciesFromApi(getApplication(), response.data)
+                    _currencies.value = CurrencyResult.Success(currenciesList)
 
-            currencies.value = CurrencyResult.Success(createCurrencyList())
+                    // Buscamos en la lista de monedas la que tenga el código ISO igual a 'EURO_ISO_CODE'
+                    // y la asignamos a '_selectedCurrency1'. Si no se encuentra ninguna,
+                    // se asigna la primera moneda de la lista o null si la lista está vacía.
+                    _selectedCurrency1.value =
+                        (currencies.value as? CurrencyResult.Success)?.data?.find { it.isoCode == EURO_ISO_CODE }
+                            ?: (currencies.value as? CurrencyResult.Success)?.data?.firstOrNull()
 
-            _selectedCurrency1.value =
-                (currencies.value as? CurrencyResult.Success)?.data?.find { it.isoCode == EURO_ISO_CODE }
-                    ?: (currencies.value as? CurrencyResult.Success)?.data?.firstOrNull()
+                    _selectedCurrency2.value =
+                        (currencies.value as? CurrencyResult.Success)?.data?.find { it.isoCode == AMERICAN_DOLLAR_ISO_CODE }
+                            ?: (currencies.value as? CurrencyResult.Success)?.data?.firstOrNull()
+                }
 
-            _selectedCurrency2.value =
-                (currencies.value as? CurrencyResult.Success)?.data?.find { it.isoCode == AMERICAN_DOLLAR_ISO_CODE }
-                    ?: (currencies.value as? CurrencyResult.Success)?.data?.firstOrNull()
-
-
-        } else {
-            // La función launch inicia una nueva corrutina en 'viewModelScope'.
-            // Este scope está ligado al ciclo de vida del ViewModel.
-
-            currencies.value = CurrencyResult.Loading
-
-            viewModelScope.launch {
-                when (val response = currencyRepository.getCurrencyRates()) {
-                    is ApiResult.Success -> {
-
-                        val currenciesList = loadCurrenciesFromApi(getApplication(), response.data)
-
-                        Log.d("API_OK", currenciesList.size.toString())
-
-                        currencies.value = CurrencyResult.Success(currenciesList)
-
-                        // Buscamos en la lista de monedas la que tenga el código ISO igual a 'EURO_ISO_CODE'
-                        // y la asignamos a '_selectedCurrency1'. Si no se encuentra ninguna,
-                        // se asigna la primera moneda de la lista o null si la lista está vacía.
-                        _selectedCurrency1.value =
-                            (currencies.value as? CurrencyResult.Success)?.data?.find { it.isoCode == EURO_ISO_CODE }
-                                ?: (currencies.value as? CurrencyResult.Success)?.data?.firstOrNull()
-
-                        _selectedCurrency2.value =
-                            (currencies.value as? CurrencyResult.Success)?.data?.find { it.isoCode == AMERICAN_DOLLAR_ISO_CODE }
-                                ?: (currencies.value as? CurrencyResult.Success)?.data?.firstOrNull()
-                    }
-
-                    is ApiResult.Error -> {
-
-                        currencies.value = CurrencyResult.Failure(Exception(response.exception))
-                    }
+                is ApiResult.Error -> {
+                    _currencies.value = CurrencyResult.Failure(Exception(response.exception))
                 }
             }
         }
@@ -169,9 +146,6 @@ class MainViewModel(
         // Corutina dentro del viewModelScope. La corutina se cancelará cuando
         // se destruya el ViewModel.
         viewModelScope.launch {
-            // La función delay() suspende la corutina durante un tiempo determinado
-            // por timeMillis
-            delay(500)
             // Llamamos a onConversionButtonClicked() para realizar
             // la conversión y almacenamos el resultado en la variable conversionResult.
 
@@ -207,48 +181,4 @@ class MainViewModel(
         playSoundUseCase.play(keyText, isSoundEnabled)
     }
 
-    private fun createCurrencyList(): List<Currency> {
-        val currency1 = Currency(
-            isoCode = "USD",
-            countryName = "United States",
-            currencyName = "Dollar",
-            currencySymbol = "$",
-            exchangeRate = 1.0
-        )
-
-        val currency2 = Currency(
-            isoCode = "EUR",
-            countryName = "European Union",
-            currencyName = "Euro",
-            currencySymbol = "€",
-            exchangeRate = 0.85
-        )
-
-        val currency3 = Currency(
-            isoCode = "GBP",
-            countryName = "United Kingdom",
-            currencyName = "Pound",
-            currencySymbol = "£",
-            exchangeRate = 0.75
-        )
-
-        val currency4 = Currency(
-            isoCode = "JPY",
-            countryName = "Japan",
-            currencyName = "Yen",
-            currencySymbol = "¥",
-            exchangeRate = 110.25
-        )
-
-        val currency5 = Currency(
-            isoCode = "AUD",
-            countryName = "Australia",
-            currencyName = "Australian Dollar",
-            currencySymbol = "A$",
-            exchangeRate = 1.35
-        )
-
-        return listOf(currency1, currency2, currency3, currency4, currency5)
-
-    }
 }

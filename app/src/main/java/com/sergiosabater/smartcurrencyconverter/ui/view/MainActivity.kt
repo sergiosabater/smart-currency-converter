@@ -101,7 +101,7 @@ fun MainScreen(currencyRepository: CurrencyRepository, navController: NavControl
         }
 
         is CurrencyResult.Success -> {
-            val currencies = (currencies as CurrencyResult.Success).data
+            val currenciesList = (currencies as CurrencyResult.Success).data
             Column {
                 // Primer display
                 mDisplay.CustomDisplay(displayText = displayText, symbol = displaySymbol)
@@ -117,10 +117,10 @@ fun MainScreen(currencyRepository: CurrencyRepository, navController: NavControl
 
                 // Selector de monedas
                 mCurrencySelector.CustomCurrencySelector(
-                    currencies,
+                    currenciesList,
                     mainViewModel::onCurrencySelected,
-                    defaultCurrency1 ?: currencies[0],
-                    defaultCurrency2 ?: currencies[0]
+                    defaultCurrency1 ?: currenciesList[0],
+                    defaultCurrency2 ?: currenciesList[0]
                 )
 
                 //Teclado
