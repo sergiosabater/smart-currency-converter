@@ -1,121 +1,104 @@
 package com.sergiosabater.smartcurrencyconverter.viewmodel
 
 import android.app.Application
+import android.content.res.Resources
 import com.sergiosabater.smartcurrencyconverter.data.network.ApiResult
-import com.sergiosabater.smartcurrencyconverter.domain.model.CurrencyRateResponse
 import com.sergiosabater.smartcurrencyconverter.domain.model.CurrencyResult
 import com.sergiosabater.smartcurrencyconverter.domain.usecase.common.NavigateToSettingsUseCase
 import com.sergiosabater.smartcurrencyconverter.repository.CurrencyRepository
+import com.sergiosabater.smartcurrencyconverter.viewmodel.TestHelpers.jsonString
+import com.sergiosabater.smartcurrencyconverter.viewmodel.TestHelpers.response
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
-import org.junit.Assert.*
-
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
+import java.io.ByteArrayInputStream
+import java.nio.charset.Charset
 
+@ExperimentalCoroutinesApi
 class MainViewModelTest {
 
-    // Dependiencias mockeadas
+    // Dependencias mockeadas
+    private lateinit var application: Application
+    private lateinit var mainViewModel: MainViewModel
+
     private val mockCurrencyRepository = mockk<CurrencyRepository>()
     private val mockNavigateToSettingsUseCase = mockk<NavigateToSettingsUseCase>()
-    private val application = mockk<Application>()
 
-    // Crear el ViewModel con las dependencias mockeadas
-    private val viewModel = MainViewModel(application, mockCurrencyRepository, mockNavigateToSettingsUseCase)
-
-    // Preparar la respuesta de la API
-    private val ratesData = mapOf(
-        "USD" to 1.0,
-        "EUR" to 0.85,
-        "GBP" to 0.75
-    )
-
-    private val response = CurrencyRateResponse(
-        disclaimer = "Disclaimer test",
-        license = "License test",
-        timestamp = 123456789L,
-        base = "USD",
-        rates = ratesData
-    )
+    private val testDispatcher = TestCoroutineDispatcher()
 
     @Before
     fun setUp() {
+        Dispatchers.setMain(testDispatcher)
 
+        // Mockea el contexto de la aplicación
+        application = mockk<Application>(relaxed = true) {
+            every { applicationContext } returns this
+        }
+
+        // Mockea el objeto Resources y el InputStream
+        val resources = mockk<Resources>()
+        val inputStream =
+            ByteArrayInputStream(jsonString.toByteArray(Charset.defaultCharset()))
+
+        // Configura el objeto Application mockeado para que devuelva el objeto Resources mockeado
+        every { application.resources } returns resources
+
+        // Configura el objeto Resources mockeado para que devuelva el InputStream cuando se llame a openRawResource()
+        every { resources.openRawResource(any()) } returns inputStream
+
+        // Crea la instancia del ViewModel con las dependencias mockeadas
+        mainViewModel =
+            MainViewModel(application, mockCurrencyRepository, mockNavigateToSettingsUseCase)
     }
 
     @After
     fun tearDown() {
+        //Limpiamos Dispatchers
+        Dispatchers.resetMain()
+        testDispatcher.cleanupTestCoroutines()
     }
 
     @Test
     fun loadCurrencies() {
-
         // Configurar las respuestas de las dependencias mockeadas
         coEvery { mockCurrencyRepository.getCurrencyRates() } returns ApiResult.Success(response)
 
         // Creamos el resultado esperado
         val expectedResult = CurrencyResult.Success(TestHelpers.loadCurrenciesFromApi(response))
 
-        // Llamar al método a testear
-        viewModel.loadCurrencies()
+        runTest {
+            // Llamar al método a testear
+            mainViewModel.loadCurrencies()
+
+        }
 
         // Los resultados obtenidos
-        val result = viewModel.currencies.value
+        val result = mainViewModel.currencies.value
 
         // Aquí verificamos que 'result' contiene los datos esperados.
         assertEquals(expectedResult, result)
     }
 
-    @Test
-    fun getCurrencies() {
-    }
 
     @Test
-    fun getDisplayText() {
-    }
+    fun testOnClearButtonClicked() {
 
-    @Test
-    fun getDisplaySymbol() {
-    }
+        // Establecer un valor inicial para _displayText
+        mainViewModel._displayText.value = "1234"
 
-    @Test
-    fun getSelectedCurrency1() {
-    }
+        mainViewModel.onClearButtonClicked()
 
-    @Test
-    fun getSelectedCurrency2() {
-    }
-
-    @Test
-    fun getConversionResult() {
-    }
-
-    @Test
-    fun getConversionSymbol() {
-    }
-
-    @Test
-    fun onClearButtonClicked() {
-    }
-
-    @Test
-    fun onNumericButtonClicked() {
-    }
-
-    @Test
-    fun onBackspaceClicked() {
-    }
-
-    @Test
-    fun onCurrencySelected() {
-    }
-
-    @Test
-    fun onSettingsButtonClicked() {
-    }
-
-    @Test
-    fun onKeyClicked() {
+        // Assert que _displayText es igual a "0" después de llamar a onClearButtonClicked
+        assertEquals("0", mainViewModel._displayText.value)
     }
 }

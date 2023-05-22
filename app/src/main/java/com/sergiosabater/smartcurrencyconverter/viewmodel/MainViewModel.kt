@@ -47,7 +47,7 @@ class MainViewModel(
     private val _currencies = MutableStateFlow<CurrencyResult>(CurrencyResult.Loading)
     val currencies: StateFlow<CurrencyResult> = _currencies
 
-    private val _displayText = MutableStateFlow(INITIAL_VALUE_STRING)
+    internal val _displayText = MutableStateFlow(INITIAL_VALUE_STRING)
     val displayText: StateFlow<String> = _displayText
 
     private val _displaySymbol = MutableStateFlow(EURO)
