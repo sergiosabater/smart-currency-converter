@@ -2,6 +2,7 @@ package com.sergiosabater.smartcurrencyconverter.viewmodel
 
 import android.app.Application
 import android.content.res.Resources
+import app.cash.turbine.test
 import com.sergiosabater.smartcurrencyconverter.data.network.ApiResult
 import com.sergiosabater.smartcurrencyconverter.domain.model.CurrencyResult
 import com.sergiosabater.smartcurrencyconverter.domain.usecase.common.NavigateToSettingsUseCase
@@ -19,13 +20,19 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import java.io.ByteArrayInputStream
 import java.nio.charset.Charset
+import kotlin.time.ExperimentalTime
 
 @ExperimentalCoroutinesApi
 class MainViewModelTest {
+
+    @get:Rule
+    val coroutineTestRule = CoroutineTestRule()
 
     // Dependencias mockeadas
     private lateinit var application: Application
@@ -89,8 +96,23 @@ class MainViewModelTest {
         assertEquals(expectedResult, result)
     }
 
-
+    @OptIn(ExperimentalTime::class)
     @Test
+    fun `test onClearButtonClicked`() = coroutineTestRule.runTest {
+
+        mainViewModel.onNumericButtonClicked("8")
+
+        // When
+        mainViewModel.onClearButtonClicked()
+
+        // Then
+        mainViewModel.displayText.test {
+            assertTrue(awaitItem() == "0")
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    /*@Test
     fun testOnClearButtonClicked() {
 
         // Establecer un valor inicial para _displayText
@@ -101,4 +123,5 @@ class MainViewModelTest {
         // Assert que _displayText es igual a "0" después de llamar a onClearButtonClicked
         assertEquals("0", mainViewModel._displayText.value)
     }
+    */
 }
