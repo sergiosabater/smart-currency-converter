@@ -12,14 +12,8 @@ import com.sergiosabater.smartcurrencyconverter.viewmodel.TestHelpers.response
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import org.junit.After
-import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -41,14 +35,12 @@ class MainViewModelTest {
     private val mockCurrencyRepository = mockk<CurrencyRepository>()
     private val mockNavigateToSettingsUseCase = mockk<NavigateToSettingsUseCase>()
 
-    private val testDispatcher = TestCoroutineDispatcher()
 
     @Before
     fun setUp() {
-        Dispatchers.setMain(testDispatcher)
 
         // Mockea el contexto de la aplicación
-        application = mockk<Application>(relaxed = true) {
+        application = mockk(relaxed = true) {
             every { applicationContext } returns this
         }
 
@@ -68,38 +60,34 @@ class MainViewModelTest {
             MainViewModel(application, mockCurrencyRepository, mockNavigateToSettingsUseCase)
     }
 
-    @After
-    fun tearDown() {
-        //Limpiamos Dispatchers
-        Dispatchers.resetMain()
-        testDispatcher.cleanupTestCoroutines()
-    }
-
+    @OptIn(ExperimentalTime::class)
     @Test
-    fun loadCurrencies() {
+    fun `test loadCurrencies`() = coroutineTestRule.runTest {
+
+        // Creamos el resultado esperado
+        val expectedResult = CurrencyResult.Success(TestHelpers.generateCurrencyList())
+
+        // Given:
         // Configurar las respuestas de las dependencias mockeadas
         coEvery { mockCurrencyRepository.getCurrencyRates() } returns ApiResult.Success(response)
 
-        // Creamos el resultado esperado
-        val expectedResult = CurrencyResult.Success(TestHelpers.loadCurrenciesFromApi(response))
+        // When:
+        // Llamar al método a testear
+        mainViewModel.loadCurrencies()
 
-        runTest {
-            // Llamar al método a testear
-            mainViewModel.loadCurrencies()
-
-        }
-
+        // Then:
         // Los resultados obtenidos
-        val result = mainViewModel.currencies.value
-
-        // Aquí verificamos que 'result' contiene los datos esperados.
-        assertEquals(expectedResult, result)
+        mainViewModel.currencies.test {
+            assertTrue(awaitItem() == expectedResult)
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     @OptIn(ExperimentalTime::class)
     @Test
     fun `test onClearButtonClicked`() = coroutineTestRule.runTest {
 
+        // Given
         mainViewModel.onNumericButtonClicked("8")
 
         // When
@@ -112,16 +100,41 @@ class MainViewModelTest {
         }
     }
 
-    /*@Test
-    fun testOnClearButtonClicked() {
+    @OptIn(ExperimentalTime::class)
+    @Test
+    fun `test onNumericButtonClicked with existing display value`() = coroutineTestRule.runTest {
+        // Given a display text with value "1.000"
+        mainViewModel.onNumericButtonClicked("1")
+        mainViewModel.onNumericButtonClicked("0")
+        mainViewModel.onNumericButtonClicked("0")
+        mainViewModel.onNumericButtonClicked("0")
 
-        // Establecer un valor inicial para _displayText
-        mainViewModel._displayText.value = "1234"
+        // When
+        mainViewModel.onNumericButtonClicked("3")
 
-        mainViewModel.onClearButtonClicked()
-
-        // Assert que _displayText es igual a "0" después de llamar a onClearButtonClicked
-        assertEquals("0", mainViewModel._displayText.value)
+        // Then
+        mainViewModel.displayText.test {
+            assertTrue(awaitItem() == "10.003")
+            cancelAndIgnoreRemainingEvents()
+        }
     }
-    */
+
+    @OptIn(ExperimentalTime::class)
+    @Test
+    fun `test onBackspaceClicked with existing display value`() = coroutineTestRule.runTest {
+        // Given a display text with value "123"
+        mainViewModel.onNumericButtonClicked("1")
+        mainViewModel.onNumericButtonClicked("2")
+        mainViewModel.onNumericButtonClicked("3")
+
+        // When
+        mainViewModel.onBackspaceClicked()
+
+        // Then
+        mainViewModel.displayText.test {
+            assertTrue(awaitItem() == "12")
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
 }
