@@ -1,7 +1,6 @@
 package com.sergiosabater.smartcurrencyconverter.repository
 
 
-import com.sergiosabater.smartcurrencyconverter.data.network.ApiInterface
 import com.sergiosabater.smartcurrencyconverter.data.network.ApiResult
 import com.sergiosabater.smartcurrencyconverter.domain.model.CurrencyRateResponse
 import com.sergiosabater.smartcurrencyconverter.repository.datasource.LocalDataSource
@@ -21,6 +20,7 @@ class CurrencyRepositoryImpl(
                     localDataSource.saveCurrencyRates(response.data)
                     ApiResult.Success(response.data)
                 }
+
                 is ApiResult.Error -> {
                     // Si hay un error en la respuesta de la API, intenta obtener los datos de la base de datos local
                     getLocalData(response.exception)

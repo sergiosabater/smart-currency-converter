@@ -19,7 +19,7 @@ import com.sergiosabater.smartcurrencyconverter.util.constant.SymbolConstants.AM
 import com.sergiosabater.smartcurrencyconverter.util.constant.SymbolConstants.EURO
 import com.sergiosabater.smartcurrencyconverter.util.constant.TextConstants.AMERICAN_DOLLAR_ISO_CODE
 import com.sergiosabater.smartcurrencyconverter.util.constant.TextConstants.EURO_ISO_CODE
-import com.sergiosabater.smartcurrencyconverter.util.parser.loadCurrenciesFromApi
+import com.sergiosabater.smartcurrencyconverter.util.parser.CurrencyApiHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -27,7 +27,8 @@ import kotlinx.coroutines.launch
 class MainViewModel(
     application: Application,
     private val currencyRepository: CurrencyRepository,
-    private val navigateToSettingsUseCase: NavigateToSettingsUseCase
+    private val navigateToSettingsUseCase: NavigateToSettingsUseCase,
+    private val currencyApiHelper: CurrencyApiHelper
 ) :
     AndroidViewModel(application) {
     // Los casos de uso que manejan la lógica de negocio y son instanciados en el ViewModel
@@ -117,7 +118,8 @@ class MainViewModel(
         viewModelScope.launch {
             when (val response = currencyRepository.getCurrencyRates()) {
                 is ApiResult.Success -> {
-                    val currenciesList = loadCurrenciesFromApi(getApplication(), response.data)
+                    val currenciesList =
+                        currencyApiHelper.loadCurrenciesFromApi(getApplication(), response.data)
                     _currencies.value = CurrencyResult.Success(currenciesList)
 
                     // Buscamos en la lista de monedas la que tenga el código ISO igual a 'EURO_ISO_CODE'

@@ -11,16 +11,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-
 import androidx.navigation.compose.rememberNavController
-
 import com.sergiosabater.smartcurrencyconverter.data.network.RetrofitClient
 import com.sergiosabater.smartcurrencyconverter.database.AppDatabase
 import com.sergiosabater.smartcurrencyconverter.domain.model.CurrencyResult
@@ -35,6 +31,8 @@ import com.sergiosabater.smartcurrencyconverter.ui.components.Keyboard
 import com.sergiosabater.smartcurrencyconverter.ui.components.SplashScreen
 import com.sergiosabater.smartcurrencyconverter.ui.components.config.KeyboardConfig
 import com.sergiosabater.smartcurrencyconverter.ui.theme.SmartCurrencyConverterTheme
+import com.sergiosabater.smartcurrencyconverter.util.parser.CurrencyApiHelper
+import com.sergiosabater.smartcurrencyconverter.util.parser.CurrencyApiHelperImpl
 import com.sergiosabater.smartcurrencyconverter.viewmodel.MainViewModel
 import com.sergiosabater.smartcurrencyconverter.viewmodel.MainViewModelFactory
 import com.sergiosabater.smartcurrencyconverter.viewmodel.SettingsViewModel
@@ -48,13 +46,20 @@ class MainActivity : ComponentActivity() {
         val currencyRateDao = database.currencyRateDao()
         val localDataSource = LocalDataSource(currencyRateDao)
         val currencyRepository = CurrencyRepositoryImpl(remoteDataSource, localDataSource)
+        val currencyApiHelper = CurrencyApiHelperImpl()
         setContent {
             SmartCurrencyConverterTheme {
                 val navController = rememberNavController()
                 val settingsViewModel: SettingsViewModel = viewModel()
 
                 NavHost(navController, startDestination = "main") {
-                    composable("main") { MainScreen(currencyRepository, navController) }
+                    composable("main") {
+                        MainScreen(
+                            currencyRepository,
+                            navController,
+                            currencyApiHelper
+                        )
+                    }
                     composable("settings") {
                         SettingsScreen(
                             settingsViewModel = settingsViewModel,
@@ -68,13 +73,18 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainScreen(currencyRepository: CurrencyRepository, navController: NavController) {
+fun MainScreen(
+    currencyRepository: CurrencyRepository,
+    navController: NavController,
+    currencyApiHelper: CurrencyApiHelper
+) {
     val navigateToSettingsUseCase = NavigateToSettingsUseCase(navController)
     val mainViewModel: MainViewModel = viewModel(
         factory = MainViewModelFactory(
             LocalContext.current.applicationContext as Application,
             currencyRepository,
-            navigateToSettingsUseCase
+            navigateToSettingsUseCase,
+            currencyApiHelper
         )
     )
 
