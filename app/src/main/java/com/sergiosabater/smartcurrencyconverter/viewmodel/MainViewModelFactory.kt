@@ -11,7 +11,8 @@ class MainViewModelFactory(
     private val application: Application,
     private val currencyRepository: CurrencyRepository,
     private val navigateToSettingsUseCase: NavigateToSettingsUseCase,
-    private val currencyApiHelper: CurrencyApiHelper
+    private val currencyApiHelper: CurrencyApiHelper,
+    private val settingsViewModel: SettingsViewModel
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
@@ -20,7 +21,8 @@ class MainViewModelFactory(
                 application,
                 currencyRepository,
                 navigateToSettingsUseCase,
-                currencyApiHelper
+                currencyApiHelper,
+                settingsViewModel
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

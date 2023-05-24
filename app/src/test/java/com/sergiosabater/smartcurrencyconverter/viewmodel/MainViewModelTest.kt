@@ -14,6 +14,8 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -35,10 +37,15 @@ class MainViewModelTest {
     private val mockCurrencyRepository = mockk<CurrencyRepository>()
     private val mockNavigateToSettingsUseCase = mockk<NavigateToSettingsUseCase>()
     private val mockCurrencyApiHelper = mockk<CurrencyApiHelperImpl>()
+    private val mockSettingsViewModel = mockk<SettingsViewModel>()
 
 
     @Before
     fun setUp() {
+
+        // Mockea el comportamiento de userPreferencesFlow
+        val stateFlow = MutableStateFlow(UserPreferences(soundEnabled = false))
+        every { mockSettingsViewModel.userPreferencesFlow } returns stateFlow
 
         // Mockea el contexto de la aplicación
         application = mockk(relaxed = true) {
@@ -61,7 +68,8 @@ class MainViewModelTest {
                 application,
                 mockCurrencyRepository,
                 mockNavigateToSettingsUseCase,
-                mockCurrencyApiHelper
+                mockCurrencyApiHelper,
+                mockSettingsViewModel
             )
     }
 
@@ -72,7 +80,7 @@ class MainViewModelTest {
 
     @OptIn(ExperimentalTime::class)
     @Test
-    fun `test loadCurrencies`() = coroutineTestRule.runTest {
+    fun `test loadCurrencies on Success result`() = coroutineTestRule.runTest {
 
         // Creamos el resultado esperado
         val expectedResult = CurrencyResult.Success(generateCurrencyList())

@@ -28,7 +28,8 @@ class MainViewModel(
     application: Application,
     private val currencyRepository: CurrencyRepository,
     private val navigateToSettingsUseCase: NavigateToSettingsUseCase,
-    private val currencyApiHelper: CurrencyApiHelper
+    private val currencyApiHelper: CurrencyApiHelper,
+    private val settingsViewModel: SettingsViewModel
 ) :
     AndroidViewModel(application) {
     // Los casos de uso que manejan la lógica de negocio y son instanciados en el ViewModel
@@ -38,8 +39,6 @@ class MainViewModel(
     private val handleCurrencySelectionUseCase = HandleCurrencySelectionUseCase()
     private val handleConversionUseCase = HandleConversionUseCase()
     private val playSoundUseCase = PlaySoundUseCase(application)
-
-    private val settingsViewModel: SettingsViewModel = SettingsViewModel(application)
 
     private var isSoundEnabled = false
 

@@ -39,6 +39,7 @@ import com.sergiosabater.smartcurrencyconverter.viewmodel.SettingsViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         val apiInterface = RetrofitClient.instance
         val remoteDataSource = RemoteDataSource(apiInterface)
@@ -47,17 +48,19 @@ class MainActivity : ComponentActivity() {
         val localDataSource = LocalDataSource(currencyRateDao)
         val currencyRepository = CurrencyRepositoryImpl(remoteDataSource, localDataSource)
         val currencyApiHelper = CurrencyApiHelperImpl()
+        val settingsViewModel = SettingsViewModel(application)
+
         setContent {
             SmartCurrencyConverterTheme {
                 val navController = rememberNavController()
-                val settingsViewModel: SettingsViewModel = viewModel()
 
                 NavHost(navController, startDestination = "main") {
                     composable("main") {
                         MainScreen(
                             currencyRepository,
                             navController,
-                            currencyApiHelper
+                            currencyApiHelper,
+                            settingsViewModel
                         )
                     }
                     composable("settings") {
@@ -76,7 +79,8 @@ class MainActivity : ComponentActivity() {
 fun MainScreen(
     currencyRepository: CurrencyRepository,
     navController: NavController,
-    currencyApiHelper: CurrencyApiHelper
+    currencyApiHelper: CurrencyApiHelper,
+    settingsViewModel: SettingsViewModel
 ) {
     val navigateToSettingsUseCase = NavigateToSettingsUseCase(navController)
     val mainViewModel: MainViewModel = viewModel(
@@ -84,7 +88,8 @@ fun MainScreen(
             LocalContext.current.applicationContext as Application,
             currencyRepository,
             navigateToSettingsUseCase,
-            currencyApiHelper
+            currencyApiHelper,
+            settingsViewModel
         )
     )
 
