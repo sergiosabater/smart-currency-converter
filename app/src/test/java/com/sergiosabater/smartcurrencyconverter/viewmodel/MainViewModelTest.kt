@@ -1,25 +1,22 @@
 package com.sergiosabater.smartcurrencyconverter.viewmodel
 
 import android.app.Application
-import android.content.res.Resources
 import app.cash.turbine.test
 import com.sergiosabater.smartcurrencyconverter.data.network.ApiResult
 import com.sergiosabater.smartcurrencyconverter.domain.model.CurrencyResult
 import com.sergiosabater.smartcurrencyconverter.domain.usecase.common.NavigateToSettingsUseCase
 import com.sergiosabater.smartcurrencyconverter.repository.CurrencyRepository
-import com.sergiosabater.smartcurrencyconverter.viewmodel.TestHelpers.jsonString
+import com.sergiosabater.smartcurrencyconverter.util.parser.CurrencyApiHelperImpl
+import com.sergiosabater.smartcurrencyconverter.viewmodel.TestHelpers.generateCurrencyList
 import com.sergiosabater.smartcurrencyconverter.viewmodel.TestHelpers.response
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.io.ByteArrayInputStream
-import java.nio.charset.Charset
 import kotlin.time.ExperimentalTime
 
 @ExperimentalCoroutinesApi
@@ -34,6 +31,7 @@ class MainViewModelTest {
 
     private val mockCurrencyRepository = mockk<CurrencyRepository>()
     private val mockNavigateToSettingsUseCase = mockk<NavigateToSettingsUseCase>()
+    private val mockCurrencyApiHelper = mockk<CurrencyApiHelperImpl>()
 
 
     @Before
@@ -44,20 +42,24 @@ class MainViewModelTest {
             every { applicationContext } returns this
         }
 
-        // Mockea el objeto Resources y el InputStream
-        val resources = mockk<Resources>()
-        val inputStream =
-            ByteArrayInputStream(jsonString.toByteArray(Charset.defaultCharset()))
+        // Cada vez que se llame a loadCurrenciesFromApi, devuelve la lista de Currency predeterminada
+        every {
+            mockCurrencyApiHelper.loadCurrenciesFromApi(
+                any(),
+                any()
+            )
+        } returns generateCurrencyList()
 
-        // Configura el objeto Application mockeado para que devuelva el objeto Resources mockeado
-        every { application.resources } returns resources
-
-        // Configura el objeto Resources mockeado para que devuelva el InputStream cuando se llame a openRawResource()
-        every { resources.openRawResource(any()) } returns inputStream
+        coEvery { mockCurrencyRepository.getCurrencyRates() } returns ApiResult.Success(response)
 
         // Crea la instancia del ViewModel con las dependencias mockeadas
         mainViewModel =
-            MainViewModel(application, mockCurrencyRepository, mockNavigateToSettingsUseCase)
+            MainViewModel(
+                application,
+                mockCurrencyRepository,
+                mockNavigateToSettingsUseCase,
+                mockCurrencyApiHelper
+            )
     }
 
     @OptIn(ExperimentalTime::class)
@@ -65,7 +67,7 @@ class MainViewModelTest {
     fun `test loadCurrencies`() = coroutineTestRule.runTest {
 
         // Creamos el resultado esperado
-        val expectedResult = CurrencyResult.Success(TestHelpers.generateCurrencyList())
+        val expectedResult = CurrencyResult.Success(generateCurrencyList())
 
         // Given:
         // Configurar las respuestas de las dependencias mockeadas
