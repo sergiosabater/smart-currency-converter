@@ -9,10 +9,13 @@ import com.sergiosabater.smartcurrencyconverter.repository.CurrencyRepository
 import com.sergiosabater.smartcurrencyconverter.util.parser.CurrencyApiHelperImpl
 import com.sergiosabater.smartcurrencyconverter.viewmodel.TestHelpers.generateCurrencyList
 import com.sergiosabater.smartcurrencyconverter.viewmodel.TestHelpers.response
+import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -62,6 +65,11 @@ class MainViewModelTest {
             )
     }
 
+    @After
+    fun tearDown() {
+        clearAllMocks()
+    }
+
     @OptIn(ExperimentalTime::class)
     @Test
     fun `test loadCurrencies`() = coroutineTestRule.runTest {
@@ -80,7 +88,7 @@ class MainViewModelTest {
         // Then:
         // Los resultados obtenidos
         mainViewModel.currencies.test {
-            assertTrue(awaitItem() == expectedResult)
+            assertEquals(expectedResult, awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -91,13 +99,17 @@ class MainViewModelTest {
 
         // Given
         mainViewModel.onNumericButtonClicked("8")
+        mainViewModel.displayText.test {
+            assertEquals("8", awaitItem())
+            cancelAndIgnoreRemainingEvents()
+        }
 
         // When
         mainViewModel.onClearButtonClicked()
 
         // Then
         mainViewModel.displayText.test {
-            assertTrue(awaitItem() == "0")
+            assertEquals("0", awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -107,9 +119,28 @@ class MainViewModelTest {
     fun `test onNumericButtonClicked with existing display value`() = coroutineTestRule.runTest {
         // Given a display text with value "1.000"
         mainViewModel.onNumericButtonClicked("1")
+        mainViewModel.displayText.test {
+            assertEquals("1", awaitItem())
+            cancelAndIgnoreRemainingEvents()
+        }
+
         mainViewModel.onNumericButtonClicked("0")
+        mainViewModel.displayText.test {
+            assertEquals("10", awaitItem())
+            cancelAndIgnoreRemainingEvents()
+        }
+
         mainViewModel.onNumericButtonClicked("0")
+        mainViewModel.displayText.test {
+            assertEquals("100", awaitItem())
+            cancelAndIgnoreRemainingEvents()
+        }
+
         mainViewModel.onNumericButtonClicked("0")
+        mainViewModel.displayText.test {
+            assertEquals("1.000", awaitItem())
+            cancelAndIgnoreRemainingEvents()
+        }
 
         // When
         mainViewModel.onNumericButtonClicked("3")
@@ -126,8 +157,22 @@ class MainViewModelTest {
     fun `test onBackspaceClicked with existing display value`() = coroutineTestRule.runTest {
         // Given a display text with value "123"
         mainViewModel.onNumericButtonClicked("1")
+        mainViewModel.displayText.test {
+            assertEquals("1", awaitItem())
+            cancelAndIgnoreRemainingEvents()
+        }
+
         mainViewModel.onNumericButtonClicked("2")
+        mainViewModel.displayText.test {
+            assertEquals("12", awaitItem())
+            cancelAndIgnoreRemainingEvents()
+        }
+
         mainViewModel.onNumericButtonClicked("3")
+        mainViewModel.displayText.test {
+            assertEquals("123", awaitItem())
+            cancelAndIgnoreRemainingEvents()
+        }
 
         // When
         mainViewModel.onBackspaceClicked()
