@@ -134,7 +134,7 @@ class MainViewModel(
                 }
 
                 is ApiResult.Error -> {
-                    _currencies.value = CurrencyResult.Failure(Exception(response.exception))
+                    _currencies.value = CurrencyResult.Failure(response.exception)
                 }
             }
         }

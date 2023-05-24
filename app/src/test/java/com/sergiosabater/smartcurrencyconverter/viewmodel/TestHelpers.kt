@@ -21,11 +21,6 @@ object TestHelpers {
         rates = ratesData
     )
 
-    val jsonString = """[
-  {"iso_code": "USD", "name": "United States Dollar", "country": "United States", "symbol": "$"},
-  {"iso_code": "EUR", "name": "Euro", "country": "European Union", "symbol": "€"},
-  {"iso_code": "GBP", "name": "British Pound", "country": "United Kingdom", "symbol": "£"}
-  ]""".trimIndent()
 
     fun generateCurrencyList(): List<Currency> {
 

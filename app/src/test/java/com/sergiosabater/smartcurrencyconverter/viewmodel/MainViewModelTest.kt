@@ -103,6 +103,30 @@ class MainViewModelTest {
 
     @OptIn(ExperimentalTime::class)
     @Test
+    fun `test loadCurrencies on Failure result`() = coroutineTestRule.runTest {
+
+        // El resultado esperado
+        val expectedException = Exception("Error fetching currency rates")
+        val expectedResult = CurrencyResult.Failure(expectedException)
+
+        // Given:
+        // Configurar las respuestas de las dependencias mockeadas
+        coEvery { mockCurrencyRepository.getCurrencyRates() } returns ApiResult.Error(expectedException)
+
+        // When:
+        // Llamar al método a testear
+        mainViewModel.loadCurrencies()
+
+        // Then:
+        // Los resultados obtenidos
+        mainViewModel.currencies.test {
+            assertEquals(expectedResult, awaitItem())
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @OptIn(ExperimentalTime::class)
+    @Test
     fun `test onClearButtonClicked`() = coroutineTestRule.runTest {
 
         // Given
