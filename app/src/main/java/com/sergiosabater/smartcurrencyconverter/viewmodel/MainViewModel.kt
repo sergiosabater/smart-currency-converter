@@ -6,7 +6,6 @@ import com.sergiosabater.smartcurrencyconverter.R
 import com.sergiosabater.smartcurrencyconverter.data.network.ApiResult
 import com.sergiosabater.smartcurrencyconverter.domain.model.Currency
 import com.sergiosabater.smartcurrencyconverter.domain.model.CurrencyResult
-import com.sergiosabater.smartcurrencyconverter.domain.usecase.common.NavigateToSettingsUseCase
 import com.sergiosabater.smartcurrencyconverter.repository.CurrencyRepository
 import com.sergiosabater.smartcurrencyconverter.repository.UserPreferencesRepository
 import com.sergiosabater.smartcurrencyconverter.util.constant.NumberConstants.INITIAL_VALUE_STRING
@@ -30,7 +29,6 @@ import java.math.BigDecimal
 class MainViewModel(
     private val currencyRepository: CurrencyRepository,
     private val userPreferencesRepository: UserPreferencesRepository,
-    private val navigateToSettingsUseCase: NavigateToSettingsUseCase,
     private val soundPlayer: SoundPlayer,
     private val currencyLoader: CurrencyLoader
 ) :
@@ -100,7 +98,17 @@ class MainViewModel(
         triggerConversion()
     }
 
-    internal fun loadCurrencies() {
+    fun onKeyClicked(keyText: String, isSoundEnabled: Boolean) {
+        if (isSoundEnabled) {
+            val soundResId = when (keyText) {
+                CLEAR_BUTTON_STRING, BACKSPACE_SYMBOL_STRING -> R.raw.back_clic_sound
+                else -> R.raw.clic_sound
+            }
+            soundPlayer.playSound(soundResId)
+        }
+    }
+
+    private fun loadCurrencies() {
         _uiState.value = _uiState.value.copy(currencies = CurrencyResult.Loading)
 
         viewModelScope.launch {
@@ -189,20 +197,7 @@ class MainViewModel(
         // Reemplaza la coma por un punto
         return cleanAmount.replace(",", ".")
     }
-
-    fun onSettingsButtonClicked() {
-        navigateToSettingsUseCase.execute()
-    }
-
-    fun onKeyClicked(keyText: String, isSoundEnabled: Boolean) {
-        if (isSoundEnabled) {
-            val soundResId = when (keyText) {
-                CLEAR_BUTTON_STRING, BACKSPACE_SYMBOL_STRING -> R.raw.back_clic_sound
-                else -> R.raw.clic_sound
-            }
-            soundPlayer.playSound(soundResId)
-        }
-    }
+    
 }
 
 // Clase data para agrupar el estado de la UI

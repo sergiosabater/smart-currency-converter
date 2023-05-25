@@ -18,7 +18,6 @@ import androidx.navigation.compose.rememberNavController
 import com.sergiosabater.smartcurrencyconverter.data.network.RetrofitClient
 import com.sergiosabater.smartcurrencyconverter.database.AppDatabase
 import com.sergiosabater.smartcurrencyconverter.domain.model.CurrencyResult
-import com.sergiosabater.smartcurrencyconverter.domain.usecase.common.NavigateToSettingsUseCase
 import com.sergiosabater.smartcurrencyconverter.repository.CurrencyRepository
 import com.sergiosabater.smartcurrencyconverter.repository.CurrencyRepositoryImpl
 import com.sergiosabater.smartcurrencyconverter.repository.UserPreferencesRepository
@@ -87,12 +86,10 @@ fun MainScreen(
     currencyLoader: CurrencyLoader,
     userPreferencesRepository: UserPreferencesRepository
 ) {
-    val navigateToSettingsUseCase = NavigateToSettingsUseCase(navController)
     val mainViewModel: MainViewModel = viewModel(
         factory = MainViewModelFactory(
             currencyRepository,
             userPreferencesRepository,
-            navigateToSettingsUseCase,
             soundPlayer,
             currencyLoader
         )
@@ -143,11 +140,13 @@ fun MainScreen(
                 //Teclado
                 mKeyboard.CustomKeyboard(
                     config = keyboardConfig,
+                    navController = navController,
                     onClearButtonClick = mainViewModel::onClearButtonClicked,
                     onNumericButtonClicked = mainViewModel::onNumericButtonClicked,
                     onBackspaceClicked = mainViewModel::onBackspaceClicked,
-                    onSettingsButtonClicked = mainViewModel::onSettingsButtonClicked,
-                    onKeyClicked = { key -> mainViewModel.onKeyClicked(key, uiState.isSoundEnabled) }
+                    onKeyClicked = { key ->
+                        mainViewModel.onKeyClicked(key, uiState.isSoundEnabled)
+                    }
                 )
             }
         }

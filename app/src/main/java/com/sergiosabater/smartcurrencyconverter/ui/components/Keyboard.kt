@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.sergiosabater.smartcurrencyconverter.ui.components.config.KeyboardConfig
 import com.sergiosabater.smartcurrencyconverter.util.constant.SymbolConstants.BACKSPACE_SYMBOL_STRING
 import com.sergiosabater.smartcurrencyconverter.util.constant.SymbolConstants.SETTINGS_SYMBOL_STRING
@@ -33,10 +34,10 @@ class Keyboard {
     @Composable
     fun CustomKeyboard(
         config: KeyboardConfig,
+        navController: NavController,
         onClearButtonClick: () -> Unit,
         onNumericButtonClicked: (String) -> Unit,
         onBackspaceClicked: () -> Unit,
-        onSettingsButtonClicked: () -> Unit,
         onKeyClicked: (String) -> Unit
     ) {
         // BoxWithConstraints to get the available screen dimensions
@@ -70,7 +71,7 @@ class Keyboard {
                                             }
 
                                             config.buttonSymbols[i][j] == SETTINGS_SYMBOL_STRING -> {
-                                                onSettingsButtonClicked()
+                                                navController.navigate("settings")
                                             }
 
                                             config.buttonSymbols[i][j].first()

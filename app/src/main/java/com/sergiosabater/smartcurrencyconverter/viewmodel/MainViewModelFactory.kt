@@ -2,7 +2,6 @@ package com.sergiosabater.smartcurrencyconverter.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.sergiosabater.smartcurrencyconverter.domain.usecase.common.NavigateToSettingsUseCase
 import com.sergiosabater.smartcurrencyconverter.repository.CurrencyRepository
 import com.sergiosabater.smartcurrencyconverter.repository.UserPreferencesRepository
 import com.sergiosabater.smartcurrencyconverter.util.parser.CurrencyLoader
@@ -12,7 +11,6 @@ class MainViewModelFactory(
 
     private val currencyRepository: CurrencyRepository,
     private val userPreferencesRepository: UserPreferencesRepository,
-    private val navigateToSettingsUseCase: NavigateToSettingsUseCase,
     private val soundPlayer: SoundPlayer,
     private val currencyLoader: CurrencyLoader,
 
@@ -23,7 +21,6 @@ class MainViewModelFactory(
             return MainViewModel(
                 currencyRepository,
                 userPreferencesRepository,
-                navigateToSettingsUseCase,
                 soundPlayer,
                 currencyLoader,
             ) as T
