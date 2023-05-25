@@ -39,7 +39,6 @@ import com.sergiosabater.smartcurrencyconverter.viewmodel.SettingsViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         val apiInterface = RetrofitClient.instance
         val remoteDataSource = RemoteDataSource(apiInterface)
@@ -94,13 +93,7 @@ fun MainScreen(
     )
 
     // Recolectamos los StateFlow del ViewModel como un State en Compose
-    val displayText by mainViewModel.displayText.collectAsState()
-    val displaySymbol by mainViewModel.displaySymbol.collectAsState()
-    val conversionResult by mainViewModel.conversionResult.collectAsState()
-    val conversionSymbol by mainViewModel.conversionSymbol.collectAsState()
-    val currencies by mainViewModel.currencies.collectAsState()
-    val defaultCurrency1 by mainViewModel.selectedCurrency1.collectAsState()
-    val defaultCurrency2 by mainViewModel.selectedCurrency2.collectAsState()
+    val uiState by mainViewModel.uiState.collectAsState()
 
     val mDisplay = Display()
     val mCurrencySelector = CurrencySelector()
@@ -109,33 +102,33 @@ fun MainScreen(
     val splashScreen = SplashScreen()
 
 
-    when (currencies) {
+    when (uiState.currencies) {
 
         is CurrencyResult.Loading -> {
             splashScreen.Splash()
         }
 
         is CurrencyResult.Success -> {
-            val currenciesList = (currencies as CurrencyResult.Success).data
+            val currenciesList = (uiState.currencies as CurrencyResult.Success).data
             Column {
                 // Primer display
-                mDisplay.CustomDisplay(displayText = displayText, symbol = displaySymbol)
+                mDisplay.CustomDisplay(displayText = uiState.displayText, symbol = uiState.displaySymbol)
 
                 // Divider crea una línea horizontal entre los dos displays
                 Divider(color = Color.Gray, thickness = 2.dp)
 
                 // Segundo display
                 mDisplay.CustomDisplay(
-                    displayText = conversionResult,
-                    symbol = conversionSymbol
+                    displayText = uiState.conversionResult,
+                    symbol = uiState.conversionSymbol
                 )
 
                 // Selector de monedas
                 mCurrencySelector.CustomCurrencySelector(
                     currenciesList,
                     mainViewModel::onCurrencySelected,
-                    defaultCurrency1 ?: currenciesList[0],
-                    defaultCurrency2 ?: currenciesList[0]
+                    uiState.selectedCurrency1 ?: currenciesList[0],
+                    uiState.selectedCurrency2 ?: currenciesList[0]
                 )
 
                 //Teclado

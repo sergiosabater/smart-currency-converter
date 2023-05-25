@@ -42,28 +42,20 @@ class MainViewModel(
 
     private var isSoundEnabled = false
 
-
-    // Los StateFlows para manejar el estado de las vistas
-    private val _currencies = MutableStateFlow<CurrencyResult>(CurrencyResult.Loading)
-    val currencies: StateFlow<CurrencyResult> = _currencies
-
-    internal val _displayText = MutableStateFlow(INITIAL_VALUE_STRING)
-    val displayText: StateFlow<String> = _displayText
-
-    private val _displaySymbol = MutableStateFlow(EURO)
-    val displaySymbol: StateFlow<String> = _displaySymbol
-
-    private val _selectedCurrency1 = MutableStateFlow<Currency?>(null)
-    val selectedCurrency1: StateFlow<Currency?> = _selectedCurrency1
-
-    private val _selectedCurrency2 = MutableStateFlow<Currency?>(null)
-    val selectedCurrency2: StateFlow<Currency?> = _selectedCurrency2
-
-    private val _conversionResult = MutableStateFlow(INITIAL_VALUE_STRING)
-    val conversionResult: StateFlow<String> = _conversionResult
-
-    private val _conversionSymbol = MutableStateFlow(AMERICAN_DOLLAR)
-    val conversionSymbol: StateFlow<String> = _conversionSymbol
+    // Un único StateFlow para manejar el estado de la UI
+    private val _uiState = MutableStateFlow(
+        UIState(
+            //Valores iniciales
+            currencies = CurrencyResult.Loading,
+            displayText = INITIAL_VALUE_STRING,
+            displaySymbol = EURO,
+            selectedCurrency1 = null,
+            selectedCurrency2 = null,
+            conversionResult = INITIAL_VALUE_STRING,
+            conversionSymbol = AMERICAN_DOLLAR
+        )
+    )
+    val uiState: StateFlow<UIState> = _uiState
 
     init {
         loadCurrencies()
@@ -82,94 +74,82 @@ class MainViewModel(
     // Cada uno de ellos llama a su respectivo caso de uso
     // y actualiza el estado de la vista correspondiente
     fun onClearButtonClicked() {
-        _displayText.value = handleClearDisplayUseCase.execute()
+        _uiState.value = _uiState.value.copy(
+            displayText = handleClearDisplayUseCase.execute()
+        )
         triggerConversion()
     }
 
     fun onNumericButtonClicked(input: String) {
-        _displayText.value = handleNumericInputUseCase.execute(_displayText.value, input)
+        _uiState.value = _uiState.value.copy(
+            displayText = handleNumericInputUseCase.execute(_uiState.value.displayText, input)
+        )
         triggerConversion()
     }
 
     fun onBackspaceClicked() {
-        val updatedInput = handleBackspaceUseCase.execute(_displayText.value)
-        _displayText.value = updatedInput
+        val updatedInput = handleBackspaceUseCase.execute(_uiState.value.displayText)
+        _uiState.value = _uiState.value.copy(displayText = updatedInput)
         triggerConversion()
     }
 
     fun onCurrencySelected(selectedCurrency1: Currency, selectedCurrency2: Currency) {
-        this._selectedCurrency1.value = selectedCurrency1
-        this._selectedCurrency2.value = selectedCurrency2
-        _displaySymbol.value = handleCurrencySelectionUseCase.execute(selectedCurrency1)
+        _uiState.value = _uiState.value.copy(
+            selectedCurrency1 = selectedCurrency1,
+            selectedCurrency2 = selectedCurrency2,
+            displaySymbol = handleCurrencySelectionUseCase.execute(selectedCurrency1)
+        )
         triggerConversion()
     }
 
-    // Este método carga las monedas de manera asíncrona (mediante corrutina)
-    // las monedas con los códigos ISO "EUR" y "USD" se seleccionan como
-    // las monedas iniciales en el CurrencySelector
     internal fun loadCurrencies() {
-
-        // La función launch inicia una nueva corrutina en 'viewModelScope'.
-        // Este scope está ligado al ciclo de vida del ViewModel.
-
-        _currencies.value = CurrencyResult.Loading
+        _uiState.value = _uiState.value.copy(currencies = CurrencyResult.Loading)
 
         viewModelScope.launch {
             when (val response = currencyRepository.getCurrencyRates()) {
                 is ApiResult.Success -> {
                     val currenciesList =
                         currencyApiHelper.loadCurrenciesFromApi(getApplication(), response.data)
-                    _currencies.value = CurrencyResult.Success(currenciesList)
+                    _uiState.value = _uiState.value.copy(currencies = CurrencyResult.Success(currenciesList))
 
-                    // Buscamos en la lista de monedas la que tenga el código ISO igual a 'EURO_ISO_CODE'
-                    // y la asignamos a '_selectedCurrency1'. Si no se encuentra ninguna,
-                    // se asigna la primera moneda de la lista o null si la lista está vacía.
-                    _selectedCurrency1.value =
-                        (currencies.value as? CurrencyResult.Success)?.data?.find { it.isoCode == EURO_ISO_CODE }
-                            ?: (currencies.value as? CurrencyResult.Success)?.data?.firstOrNull()
+                    _uiState.value = _uiState.value.copy(
+                        selectedCurrency1 =
+                        _uiState.value.currencies.let { it as? CurrencyResult.Success }?.data?.find { it.isoCode == EURO_ISO_CODE }
+                            ?: _uiState.value.currencies.let { it as? CurrencyResult.Success }?.data?.firstOrNull(),
 
-                    _selectedCurrency2.value =
-                        (currencies.value as? CurrencyResult.Success)?.data?.find { it.isoCode == AMERICAN_DOLLAR_ISO_CODE }
-                            ?: (currencies.value as? CurrencyResult.Success)?.data?.firstOrNull()
+                        selectedCurrency2 =
+                        _uiState.value.currencies.let { it as? CurrencyResult.Success }?.data?.find { it.isoCode == AMERICAN_DOLLAR_ISO_CODE }
+                            ?: _uiState.value.currencies.let { it as? CurrencyResult.Success }?.data?.firstOrNull()
+                    )
                 }
 
                 is ApiResult.Error -> {
-                    _currencies.value = CurrencyResult.Failure(response.exception)
+                    _uiState.value = _uiState.value.copy(currencies = CurrencyResult.Failure(response.exception))
                 }
             }
         }
-
     }
 
-    // Este método se utiliza para iniciar la conversión después de un pequeño retardo.
-    // para evitar conversiones innecesarias
     private fun triggerConversion() {
-        // Corutina dentro del viewModelScope. La corutina se cancelará cuando
-        // se destruya el ViewModel.
         viewModelScope.launch {
-            // Llamamos a onConversionButtonClicked() para realizar
-            // la conversión y almacenamos el resultado en la variable conversionResult.
-
-            // Esto notificará a todos los observadores de _conversionResult que estos valores
-            // han cambiado.
             val result = onConversionPerform()
             if (result != null) {
-                _conversionResult.value = result.first
-                _conversionSymbol.value = result.second
+                _uiState.value = _uiState.value.copy(
+                    conversionResult = result.first,
+                    conversionSymbol = result.second
+                )
             }
         }
     }
 
-    // Este método realiza la conversión de monedas utilizando el caso de uso
-    // y actualiza el estado de la interfaz de usuario correspondiente
     private fun onConversionPerform(): Pair<String, String>? {
-        if (_selectedCurrency1.value != null && _selectedCurrency2.value != null && _displayText.value.isNotEmpty()) {
+        if (_uiState.value.selectedCurrency1 != null && _uiState.value.selectedCurrency2 != null && _uiState.value.displayText.isNotEmpty()) {
             val conversionResult = handleConversionUseCase.execute(
-                _selectedCurrency1.value!!,
-                _selectedCurrency2.value!!,
-                _displayText.value
+                _uiState.value.selectedCurrency1!!,
+                _uiState.value.selectedCurrency2!!,
+                _uiState.value.displayText
             )
-            return Pair(conversionResult, _selectedCurrency2.value?.currencySymbol ?: "")
+            return Pair(conversionResult, _uiState.value.selectedCurrency2?.currencySymbol ?: "")
         }
         return null
     }
@@ -181,5 +161,16 @@ class MainViewModel(
     fun onKeyClicked(keyText: String) {
         playSoundUseCase.play(keyText, isSoundEnabled)
     }
-
 }
+
+// Clase data para agrupar el estado de la UI
+data class UIState(
+    val currencies: CurrencyResult,
+    val displayText: String,
+    val displaySymbol: String,
+    val selectedCurrency1: Currency?,
+    val selectedCurrency2: Currency?,
+    val conversionResult: String,
+    val conversionSymbol: String
+)
+
