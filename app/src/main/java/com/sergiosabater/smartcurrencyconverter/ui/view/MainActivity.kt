@@ -100,7 +100,6 @@ fun MainScreen(
 
     // Recolectamos los StateFlow del ViewModel como un State en Compose
     val uiState by mainViewModel.uiState.collectAsState()
-    val isSoundEnabled by mainViewModel.isSoundEnabled.collectAsState()
 
     val mDisplay = Display()
     val mCurrencySelector = CurrencySelector()
@@ -148,7 +147,7 @@ fun MainScreen(
                     onNumericButtonClicked = mainViewModel::onNumericButtonClicked,
                     onBackspaceClicked = mainViewModel::onBackspaceClicked,
                     onSettingsButtonClicked = mainViewModel::onSettingsButtonClicked,
-                    onKeyClicked = { key -> mainViewModel.onKeyClicked(key, isSoundEnabled) }
+                    onKeyClicked = { key -> mainViewModel.onKeyClicked(key, uiState.isSoundEnabled) }
                 )
             }
         }

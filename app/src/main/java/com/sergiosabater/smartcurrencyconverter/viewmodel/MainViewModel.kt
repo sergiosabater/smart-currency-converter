@@ -36,9 +36,6 @@ class MainViewModel(
 ) :
     ViewModel() {
 
-    private val _isSoundEnabled = MutableStateFlow(false)
-    val isSoundEnabled: StateFlow<Boolean> = _isSoundEnabled
-
     // Un único StateFlow para manejar el estado de la UI
     private val _uiState = MutableStateFlow(
         UIState(
@@ -49,7 +46,8 @@ class MainViewModel(
             selectedCurrency1 = null,
             selectedCurrency2 = null,
             conversionResult = INITIAL_VALUE_STRING,
-            conversionSymbol = AMERICAN_DOLLAR
+            conversionSymbol = AMERICAN_DOLLAR,
+            isSoundEnabled = false
         )
     )
     val uiState: StateFlow<UIState> = _uiState
@@ -62,7 +60,9 @@ class MainViewModel(
     private fun initUserPreferences() {
         viewModelScope.launch {
             userPreferencesRepository.userPreferencesFlow.collect { value ->
-                _isSoundEnabled.value = value.soundEnabled
+                _uiState.value = _uiState.value.copy(
+                    isSoundEnabled = value.soundEnabled
+                )
             }
         }
     }
@@ -213,6 +213,7 @@ data class UIState(
     val selectedCurrency1: Currency?,
     val selectedCurrency2: Currency?,
     val conversionResult: String,
-    val conversionSymbol: String
+    val conversionSymbol: String,
+    val isSoundEnabled: Boolean
 )
 
