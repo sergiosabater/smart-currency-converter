@@ -1,40 +1,43 @@
 package com.sergiosabater.smartcurrencyconverter.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sergiosabater.smartcurrencyconverter.R
 import com.sergiosabater.smartcurrencyconverter.data.network.ApiResult
 import com.sergiosabater.smartcurrencyconverter.domain.model.Currency
 import com.sergiosabater.smartcurrencyconverter.domain.model.CurrencyResult
 import com.sergiosabater.smartcurrencyconverter.domain.usecase.common.NavigateToSettingsUseCase
-import com.sergiosabater.smartcurrencyconverter.domain.usecase.keyboard.PlaySoundUseCase
 import com.sergiosabater.smartcurrencyconverter.repository.CurrencyRepository
+import com.sergiosabater.smartcurrencyconverter.repository.UserPreferencesRepository
 import com.sergiosabater.smartcurrencyconverter.util.constant.NumberConstants.INITIAL_VALUE_STRING
 import com.sergiosabater.smartcurrencyconverter.util.constant.SymbolConstants.AMERICAN_DOLLAR
+import com.sergiosabater.smartcurrencyconverter.util.constant.SymbolConstants.BACKSPACE_SYMBOL_STRING
 import com.sergiosabater.smartcurrencyconverter.util.constant.SymbolConstants.EURO
 import com.sergiosabater.smartcurrencyconverter.util.constant.TextConstants.AMERICAN_DOLLAR_ISO_CODE
+import com.sergiosabater.smartcurrencyconverter.util.constant.TextConstants.CLEAR_BUTTON_STRING
 import com.sergiosabater.smartcurrencyconverter.util.constant.TextConstants.EURO_ISO_CODE
 import com.sergiosabater.smartcurrencyconverter.util.conversion.convertCurrencyAmount
 import com.sergiosabater.smartcurrencyconverter.util.format.formatDisplay
 import com.sergiosabater.smartcurrencyconverter.util.format.formatNumber
 import com.sergiosabater.smartcurrencyconverter.util.format.updateDisplay
-import com.sergiosabater.smartcurrencyconverter.util.parser.CurrencyApiHelper
+import com.sergiosabater.smartcurrencyconverter.util.parser.CurrencyLoader
+import com.sergiosabater.smartcurrencyconverter.util.sound.SoundPlayer
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 
 class MainViewModel(
-    application: Application,
     private val currencyRepository: CurrencyRepository,
+    private val userPreferencesRepository: UserPreferencesRepository,
     private val navigateToSettingsUseCase: NavigateToSettingsUseCase,
-    private val currencyApiHelper: CurrencyApiHelper,
-    private val settingsViewModel: SettingsViewModel
+    private val soundPlayer: SoundPlayer,
+    private val currencyLoader: CurrencyLoader
 ) :
-    AndroidViewModel(application) {
-    private val playSoundUseCase = PlaySoundUseCase(application)
+    ViewModel() {
 
-    private var isSoundEnabled = false
+    private val _isSoundEnabled = MutableStateFlow(false)
+    val isSoundEnabled: StateFlow<Boolean> = _isSoundEnabled
 
     // Un único StateFlow para manejar el estado de la UI
     private val _uiState = MutableStateFlow(
@@ -58,8 +61,8 @@ class MainViewModel(
 
     private fun initUserPreferences() {
         viewModelScope.launch {
-            settingsViewModel.userPreferencesFlow.collect { value ->
-                isSoundEnabled = value.soundEnabled
+            userPreferencesRepository.userPreferencesFlow.collect { value ->
+                _isSoundEnabled.value = value.soundEnabled
             }
         }
     }
@@ -104,7 +107,7 @@ class MainViewModel(
             when (val response = currencyRepository.getCurrencyRates()) {
                 is ApiResult.Success -> {
                     val currenciesList =
-                        currencyApiHelper.loadCurrenciesFromApi(getApplication(), response.data)
+                        currencyLoader.loadCurrenciesFromApi(response.data)
                     _uiState.value =
                         _uiState.value.copy(currencies = CurrencyResult.Success(currenciesList))
 
@@ -191,8 +194,14 @@ class MainViewModel(
         navigateToSettingsUseCase.execute()
     }
 
-    fun onKeyClicked(keyText: String) {
-        playSoundUseCase.play(keyText, isSoundEnabled)
+    fun onKeyClicked(keyText: String, isSoundEnabled: Boolean) {
+        if (isSoundEnabled) {
+            val soundResId = when (keyText) {
+                CLEAR_BUTTON_STRING, BACKSPACE_SYMBOL_STRING -> R.raw.back_clic_sound
+                else -> R.raw.clic_sound
+            }
+            soundPlayer.playSound(soundResId)
+        }
     }
 }
 

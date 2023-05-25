@@ -1,6 +1,5 @@
 package com.sergiosabater.smartcurrencyconverter.ui.view
 
-import android.app.Application
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -10,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -23,6 +21,8 @@ import com.sergiosabater.smartcurrencyconverter.domain.model.CurrencyResult
 import com.sergiosabater.smartcurrencyconverter.domain.usecase.common.NavigateToSettingsUseCase
 import com.sergiosabater.smartcurrencyconverter.repository.CurrencyRepository
 import com.sergiosabater.smartcurrencyconverter.repository.CurrencyRepositoryImpl
+import com.sergiosabater.smartcurrencyconverter.repository.UserPreferencesRepository
+import com.sergiosabater.smartcurrencyconverter.repository.UserPreferencesRepositoryImpl
 import com.sergiosabater.smartcurrencyconverter.repository.datasource.LocalDataSource
 import com.sergiosabater.smartcurrencyconverter.repository.datasource.RemoteDataSource
 import com.sergiosabater.smartcurrencyconverter.ui.components.CurrencySelector
@@ -31,8 +31,10 @@ import com.sergiosabater.smartcurrencyconverter.ui.components.Keyboard
 import com.sergiosabater.smartcurrencyconverter.ui.components.SplashScreen
 import com.sergiosabater.smartcurrencyconverter.ui.components.config.KeyboardConfig
 import com.sergiosabater.smartcurrencyconverter.ui.theme.SmartCurrencyConverterTheme
-import com.sergiosabater.smartcurrencyconverter.util.parser.CurrencyApiHelper
-import com.sergiosabater.smartcurrencyconverter.util.parser.CurrencyApiHelperImpl
+import com.sergiosabater.smartcurrencyconverter.util.parser.CurrencyLoader
+import com.sergiosabater.smartcurrencyconverter.util.parser.CurrencyLoaderImpl
+import com.sergiosabater.smartcurrencyconverter.util.sound.SoundPlayer
+import com.sergiosabater.smartcurrencyconverter.util.sound.SoundPlayerImpl
 import com.sergiosabater.smartcurrencyconverter.viewmodel.MainViewModel
 import com.sergiosabater.smartcurrencyconverter.viewmodel.MainViewModelFactory
 import com.sergiosabater.smartcurrencyconverter.viewmodel.SettingsViewModel
@@ -46,8 +48,10 @@ class MainActivity : ComponentActivity() {
         val currencyRateDao = database.currencyRateDao()
         val localDataSource = LocalDataSource(currencyRateDao)
         val currencyRepository = CurrencyRepositoryImpl(remoteDataSource, localDataSource)
-        val currencyApiHelper = CurrencyApiHelperImpl()
-        val settingsViewModel = SettingsViewModel(application)
+        val userPreferencesRepository = UserPreferencesRepositoryImpl(this)
+        val soundPlayer = SoundPlayerImpl(this)
+        val currencyLoader = CurrencyLoaderImpl(this)
+        val settingsViewModel = SettingsViewModel(userPreferencesRepository)
 
         setContent {
             SmartCurrencyConverterTheme {
@@ -58,14 +62,15 @@ class MainActivity : ComponentActivity() {
                         MainScreen(
                             currencyRepository,
                             navController,
-                            currencyApiHelper,
-                            settingsViewModel
+                            soundPlayer,
+                            currencyLoader,
+                            userPreferencesRepository
                         )
                     }
                     composable("settings") {
                         SettingsScreen(
-                            settingsViewModel = settingsViewModel,
-                            navController = navController
+                            settingsViewModel,
+                            navController
                         )
                     }
                 }
@@ -78,22 +83,24 @@ class MainActivity : ComponentActivity() {
 fun MainScreen(
     currencyRepository: CurrencyRepository,
     navController: NavController,
-    currencyApiHelper: CurrencyApiHelper,
-    settingsViewModel: SettingsViewModel
+    soundPlayer: SoundPlayer,
+    currencyLoader: CurrencyLoader,
+    userPreferencesRepository: UserPreferencesRepository
 ) {
     val navigateToSettingsUseCase = NavigateToSettingsUseCase(navController)
     val mainViewModel: MainViewModel = viewModel(
         factory = MainViewModelFactory(
-            LocalContext.current.applicationContext as Application,
             currencyRepository,
+            userPreferencesRepository,
             navigateToSettingsUseCase,
-            currencyApiHelper,
-            settingsViewModel
+            soundPlayer,
+            currencyLoader
         )
     )
 
     // Recolectamos los StateFlow del ViewModel como un State en Compose
     val uiState by mainViewModel.uiState.collectAsState()
+    val isSoundEnabled by mainViewModel.isSoundEnabled.collectAsState()
 
     val mDisplay = Display()
     val mCurrencySelector = CurrencySelector()
@@ -141,7 +148,7 @@ fun MainScreen(
                     onNumericButtonClicked = mainViewModel::onNumericButtonClicked,
                     onBackspaceClicked = mainViewModel::onBackspaceClicked,
                     onSettingsButtonClicked = mainViewModel::onSettingsButtonClicked,
-                    onKeyClicked = mainViewModel::onKeyClicked
+                    onKeyClicked = { key -> mainViewModel.onKeyClicked(key, isSoundEnabled) }
                 )
             }
         }
