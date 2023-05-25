@@ -112,7 +112,10 @@ fun MainScreen(
             val currenciesList = (uiState.currencies as CurrencyResult.Success).data
             Column {
                 // Primer display
-                mDisplay.CustomDisplay(displayText = uiState.displayText, symbol = uiState.displaySymbol)
+                mDisplay.CustomDisplay(
+                    displayText = uiState.displayText,
+                    symbol = uiState.displaySymbol
+                )
 
                 // Divider crea una línea horizontal entre los dos displays
                 Divider(color = Color.Gray, thickness = 2.dp)

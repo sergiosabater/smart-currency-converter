@@ -6,12 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.sergiosabater.smartcurrencyconverter.data.network.ApiResult
 import com.sergiosabater.smartcurrencyconverter.domain.model.Currency
 import com.sergiosabater.smartcurrencyconverter.domain.model.CurrencyResult
-import com.sergiosabater.smartcurrencyconverter.domain.usecase.common.HandleConversionUseCase
 import com.sergiosabater.smartcurrencyconverter.domain.usecase.common.NavigateToSettingsUseCase
-import com.sergiosabater.smartcurrencyconverter.domain.usecase.currencySelector.HandleCurrencySelectionUseCase
-import com.sergiosabater.smartcurrencyconverter.domain.usecase.display.HandleClearDisplayUseCase
-import com.sergiosabater.smartcurrencyconverter.domain.usecase.keyboard.HandleBackspaceUseCase
-import com.sergiosabater.smartcurrencyconverter.domain.usecase.keyboard.HandleNumericInputUseCase
 import com.sergiosabater.smartcurrencyconverter.domain.usecase.keyboard.PlaySoundUseCase
 import com.sergiosabater.smartcurrencyconverter.repository.CurrencyRepository
 import com.sergiosabater.smartcurrencyconverter.util.constant.NumberConstants.INITIAL_VALUE_STRING
@@ -19,10 +14,15 @@ import com.sergiosabater.smartcurrencyconverter.util.constant.SymbolConstants.AM
 import com.sergiosabater.smartcurrencyconverter.util.constant.SymbolConstants.EURO
 import com.sergiosabater.smartcurrencyconverter.util.constant.TextConstants.AMERICAN_DOLLAR_ISO_CODE
 import com.sergiosabater.smartcurrencyconverter.util.constant.TextConstants.EURO_ISO_CODE
+import com.sergiosabater.smartcurrencyconverter.util.conversion.convertCurrencyAmount
+import com.sergiosabater.smartcurrencyconverter.util.format.formatDisplay
+import com.sergiosabater.smartcurrencyconverter.util.format.formatNumber
+import com.sergiosabater.smartcurrencyconverter.util.format.updateDisplay
 import com.sergiosabater.smartcurrencyconverter.util.parser.CurrencyApiHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
 
 class MainViewModel(
     application: Application,
@@ -32,12 +32,6 @@ class MainViewModel(
     private val settingsViewModel: SettingsViewModel
 ) :
     AndroidViewModel(application) {
-    // Los casos de uso que manejan la lógica de negocio y son instanciados en el ViewModel
-    private val handleClearDisplayUseCase = HandleClearDisplayUseCase()
-    private val handleNumericInputUseCase = HandleNumericInputUseCase()
-    private val handleBackspaceUseCase = HandleBackspaceUseCase()
-    private val handleCurrencySelectionUseCase = HandleCurrencySelectionUseCase()
-    private val handleConversionUseCase = HandleConversionUseCase()
     private val playSoundUseCase = PlaySoundUseCase(application)
 
     private var isSoundEnabled = false
@@ -75,20 +69,21 @@ class MainViewModel(
     // y actualiza el estado de la vista correspondiente
     fun onClearButtonClicked() {
         _uiState.value = _uiState.value.copy(
-            displayText = handleClearDisplayUseCase.execute()
+            displayText = "0"
         )
         triggerConversion()
     }
 
     fun onNumericButtonClicked(input: String) {
+        val updatedDisplay = updateDisplay(_uiState.value.displayText, input)
         _uiState.value = _uiState.value.copy(
-            displayText = handleNumericInputUseCase.execute(_uiState.value.displayText, input)
+            displayText = formatDisplay(updatedDisplay)
         )
         triggerConversion()
     }
 
     fun onBackspaceClicked() {
-        val updatedInput = handleBackspaceUseCase.execute(_uiState.value.displayText)
+        val updatedInput = removeLastCharacter(_uiState.value.displayText)
         _uiState.value = _uiState.value.copy(displayText = updatedInput)
         triggerConversion()
     }
@@ -97,7 +92,7 @@ class MainViewModel(
         _uiState.value = _uiState.value.copy(
             selectedCurrency1 = selectedCurrency1,
             selectedCurrency2 = selectedCurrency2,
-            displaySymbol = handleCurrencySelectionUseCase.execute(selectedCurrency1)
+            displaySymbol = selectedCurrency1.currencySymbol
         )
         triggerConversion()
     }
@@ -110,7 +105,8 @@ class MainViewModel(
                 is ApiResult.Success -> {
                     val currenciesList =
                         currencyApiHelper.loadCurrenciesFromApi(getApplication(), response.data)
-                    _uiState.value = _uiState.value.copy(currencies = CurrencyResult.Success(currenciesList))
+                    _uiState.value =
+                        _uiState.value.copy(currencies = CurrencyResult.Success(currenciesList))
 
                     _uiState.value = _uiState.value.copy(
                         selectedCurrency1 =
@@ -124,7 +120,8 @@ class MainViewModel(
                 }
 
                 is ApiResult.Error -> {
-                    _uiState.value = _uiState.value.copy(currencies = CurrencyResult.Failure(response.exception))
+                    _uiState.value =
+                        _uiState.value.copy(currencies = CurrencyResult.Failure(response.exception))
                 }
             }
         }
@@ -144,14 +141,50 @@ class MainViewModel(
 
     private fun onConversionPerform(): Pair<String, String>? {
         if (_uiState.value.selectedCurrency1 != null && _uiState.value.selectedCurrency2 != null && _uiState.value.displayText.isNotEmpty()) {
-            val conversionResult = handleConversionUseCase.execute(
-                _uiState.value.selectedCurrency1!!,
-                _uiState.value.selectedCurrency2!!,
-                _uiState.value.displayText
+            // Limpia la cadena
+            val cleanedAmount = cleanInputAmount(_uiState.value.displayText)
+
+            // Convierte la cantidad a BigDecimal
+            val bigDecimalAmount = BigDecimal(cleanedAmount)
+
+            // Realiza la conversión de moneda y retorna el resultado
+            val conversionResult = convertCurrencyAmount(
+                _uiState.value.selectedCurrency1!!.exchangeRate,
+                _uiState.value.selectedCurrency2!!.exchangeRate,
+                bigDecimalAmount.toDouble()
             )
-            return Pair(conversionResult, _uiState.value.selectedCurrency2?.currencySymbol ?: "")
+
+            return Pair(
+                formatNumber(conversionResult.toString()),
+                _uiState.value.selectedCurrency2?.currencySymbol ?: ""
+            )
         }
         return null
+    }
+
+    private fun removeLastCharacter(input: String): String {
+        // Si el input es vacío, solo hay un "0" o solo hay un caracter en el input, devolvemos "0"
+        if (input.isEmpty() || input == "0" || input.length == 1) {
+            return "0"
+        }
+
+        // Si hay más de un caracter, eliminamos el último y devolvemos el resultado
+        var updatedInput = input.substring(0, input.length - 1)
+
+        // Si el último caracter es ",", eliminamos ese caracter también
+        if (updatedInput.lastOrNull() == ',') {
+            updatedInput = updatedInput.substring(0, updatedInput.length - 1)
+        }
+
+        return updatedInput
+    }
+
+    private fun cleanInputAmount(amount: String): String {
+        // Elimina los puntos de miles si los hay
+        val cleanAmount = amount.replace(".", "")
+
+        // Reemplaza la coma por un punto
+        return cleanAmount.replace(",", ".")
     }
 
     fun onSettingsButtonClicked() {
