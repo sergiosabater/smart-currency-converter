@@ -84,8 +84,10 @@ class MainViewModel(
     }
 
     fun onBackspaceClicked() {
-        val updatedInput = removeLastCharacter(_uiState.value.displayText)
-        _uiState.value = _uiState.value.copy(displayText = updatedInput)
+        val updatedDisplay = removeLastCharacter(_uiState.value.displayText)
+        _uiState.value = _uiState.value.copy(
+            displayText = formatDisplay(updatedDisplay)
+        )
         triggerConversion()
     }
 
@@ -197,7 +199,7 @@ class MainViewModel(
         // Reemplaza la coma por un punto
         return cleanAmount.replace(",", ".")
     }
-    
+
 }
 
 // Clase data para agrupar el estado de la UI
