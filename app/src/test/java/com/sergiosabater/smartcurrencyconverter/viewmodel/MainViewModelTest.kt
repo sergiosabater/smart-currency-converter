@@ -62,6 +62,33 @@ class MainViewModelTest {
             cancelAndConsumeRemainingEvents()
         }
     }
+
+    @OptIn(ExperimentalTime::class)
+    @Test
+    fun `test onNumericButtonClicked to get 1000`() = runBlocking {
+
+        // Given
+        viewModel.onNumericButtonClicked("1")
+
+        // When
+        viewModel.uiState.test {
+            assertEquals("1", awaitItem().displayText)
+
+            viewModel.onNumericButtonClicked("0")
+            assertEquals("10", awaitItem().displayText)
+
+            viewModel.onNumericButtonClicked("0")
+            assertEquals("100", awaitItem().displayText)
+
+            viewModel.onNumericButtonClicked("0")
+
+            //Then
+            assertEquals("1.000", awaitItem().displayText)
+
+            cancelAndConsumeRemainingEvents()
+        }
+
+    }
 }
 
 
