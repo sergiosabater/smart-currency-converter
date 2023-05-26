@@ -89,6 +89,35 @@ class MainViewModelTest {
         }
 
     }
+
+    @OptIn(ExperimentalTime::class)
+    @Test
+    fun `test onBackspaceClicked with existing display value`() = runBlocking {
+
+        // Given a display text with value "123"
+
+        viewModel.onNumericButtonClicked("1")
+
+        viewModel.uiState.test {
+
+            assertEquals("1", awaitItem().displayText)
+
+            viewModel.onNumericButtonClicked("2")
+            assertEquals("12", awaitItem().displayText)
+
+            viewModel.onNumericButtonClicked("3")
+            assertEquals("123", awaitItem().displayText)
+
+            //When
+            viewModel.onBackspaceClicked()
+
+            //Then
+            assertEquals("12", awaitItem().displayText)
+
+            cancelAndConsumeRemainingEvents()
+        }
+
+    }
 }
 
 
